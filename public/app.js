@@ -92,9 +92,17 @@ function testSound() {
 document.addEventListener('click', () => initAudio(), { once: true });
 
 // =========================================================
-// CONEXIÓN EN TIEMPO REAL CON EL SERVIDOR
+// CONEXIÓN EN TIEMPO REAL CON EL SERVIDOR O NUBE GOOGLE
 // =========================================================
 function connectRealtime() {
+  if (typeof getActiveFirebaseUrl === 'function' && getActiveFirebaseUrl()) {
+    setConnectionStatus(true);
+    fetch('/api/state').then(r => r.json()).then(j => {
+      if (j.ok && j.state) handleIncomingState(j.state, 'INIT');
+    }).catch(() => {});
+    return;
+  }
+
   const evtSource = new EventSource('/api/events');
 
   evtSource.onopen = () => {
@@ -119,7 +127,7 @@ function connectRealtime() {
   };
 }
 
-// Respaldo automático cada 4 segundos por si el celular suspende la pestaña
+// Sincronización continua cada 2.5 segundos
 setInterval(async () => {
   try {
     const res = await fetch('/api/state');
@@ -131,7 +139,7 @@ setInterval(async () => {
   } catch (e) {
     setConnectionStatus(false);
   }
-}, 4000);
+}, 2500);
 
 function setConnectionStatus(online) {
   const dot = document.getElementById('connDot');
@@ -1496,9 +1504,31 @@ function renderAdminPanel() {
   }
 }
 
+function saveFirebaseCloudUrl() {
+  const input = document.getElementById('firebaseDbUrlInput');
+  const val = (input?.value || '').trim().replace(/\/+$/, '');
+  window.MISKI_FIREBASE_DB_URL = val;
+  if (val) {
+    localStorage.setItem('miski_firebase_db_url', val);
+    showToast('☁️ ¡Conectado a Google Firebase 24/7!');
+    connectRealtime();
+  } else {
+    localStorage.removeItem('miski_firebase_db_url');
+    showToast('💻 Usando modo servidor local');
+  }
+}
+
 // Inicializar vista guardada y conectar
 window.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
+  const autoDb = params.get('db');
+  if (autoDb && autoDb.startsWith('https://')) {
+    window.MISKI_FIREBASE_DB_URL = autoDb.trim().replace(/\/+$/, '');
+    localStorage.setItem('miski_firebase_db_url', window.MISKI_FIREBASE_DB_URL);
+  }
+  const fbInput = document.getElementById('firebaseDbUrlInput');
+  if (fbInput) fbInput.value = window.MISKI_FIREBASE_DB_URL || '';
+
   const autoPin = params.get('pin');
   if (autoPin) {
     const input = document.getElementById('pinLoginInput');

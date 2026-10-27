@@ -431,12 +431,38 @@
           </div>
         </div>
 
-        <!-- Columna Derecha: Resumen Rápido de Jornada -->
-        <div class="panel-card" style="position:sticky; top:76px;">
-          <div class="section-label">
-            <span>📈 Resumen de Operación</span>
+        <!-- Columna Derecha: Resumen Rápido de Jornada y Nube -->
+        <div style="position:sticky; top:76px; display:flex; flex-direction:column; gap:14px;">
+          <div class="panel-card" style="margin-bottom:0;">
+            <div class="section-label">
+              <span>📈 Resumen de Operación</span>
+            </div>
+            <div id="adminSummaryStats" style="display:flex; flex-direction:column; gap:10px;"></div>
           </div>
-          <div id="adminSummaryStats" style="display:flex; flex-direction:column; gap:10px;"></div>
+
+          <div class="panel-card" style="margin-bottom:0; border-color:#3b82f6;">
+            <div class="section-label">
+              <span style="color:#60a5fa;">☁️ Conexión Google Firebase 24/7</span>
+            </div>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:8px;">
+              Pega aquí el enlace de tu Realtime Database de Google Firebase para sincronizar 24/7 en la nube:
+            </p>
+            <input
+              type="text"
+              id="firebaseDbUrlInput"
+              class="input-field"
+              placeholder="https://miski-app-default-rtdb.firebaseio.com"
+              style="margin-bottom:8px; font-size:0.84rem;"
+            />
+            <button
+              type="button"
+              class="btn-icon"
+              style="width:100%; justify-content:center; background:#2563eb; color:#fff; border:none; padding:10px;"
+              onclick="saveFirebaseCloudUrl()"
+            >
+              ☁️ Conectar Nube 24/7
+            </button>
+          </div>
         </div>
 
       </div>
@@ -464,6 +490,7 @@
     </div>
   </div>
 
+  <script src="/cloud-config.js"></script>
   <script src="/app.js"></script>
 </body>
 </html>

@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
@@ -678,6 +679,16 @@ setInterval(() => {
     }
   }
 }, 15000);
+
+// Auto-KeepAlive 24/7 en la Nube (evita que el servidor gratuito entre en reposo)
+setInterval(() => {
+  const externalUrl = process.env.RENDER_EXTERNAL_URL || process.env.PUBLIC_URL;
+  if (externalUrl && externalUrl.startsWith('https://')) {
+    https.get(`${externalUrl.replace(/\/+$/, '')}/api/state`, (res) => {
+      res.resume();
+    }).on('error', () => {});
+  }
+}, 8 * 60 * 1000);
 
 server.listen(PORT, '0.0.0.0', () => {
   const ips = getLocalIPs();
