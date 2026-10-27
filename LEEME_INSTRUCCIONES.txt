@@ -1,0 +1,36 @@
+========================================================================
+              🍽️ MISKI APP - GUIA RAPIDA DE USO
+========================================================================
+
+Tienes 3 formas de usar Miski App segun lo que necesites:
+
+------------------------------------------------------------------------
+MODO 1: USAR EN OTRA RED / CON DATOS MOVILES SIN CREAR CUENTAS (RAPIDO)
+------------------------------------------------------------------------
+1. Haz doble clic en: MODO_INTERNET_OTRA_RED.bat
+2. Se abrira una ventana con un Codigo QR gigante y un link que termina
+   en ".lhr.life" (por ejemplo: https://a1b2c3d4.lhr.life).
+3. Mandale ese link por WhatsApp a los encargados.
+4. Ellos podran abrirlo desde sus celulares en CUALQUIER otra red Wi-Fi
+   o con sus propios datos moviles (4G/5G), meter los productos, tomar
+   pedidos en Mesero y finalizarlos en Cocina.
+
+------------------------------------------------------------------------
+MODO 2: DEJARLO EN LA NUBE 24/7 (CON TU PC APAGADA) - GRATIS
+------------------------------------------------------------------------
+Esta carpeta ya incluye el archivo "render.yaml" listo para la nube:
+1. Sube esta carpeta a un repositorio en GitHub.com.
+2. Entra gratis a https://render.com -> "New Web Service" -> Conecta tu
+   repositorio.
+3. Render te dara un link fijo para siempre (ej: https://miski.onrender.com)
+   que funciona las 24 horas aunque tu computadora este apagada.
+
+------------------------------------------------------------------------
+MODO 3: SI PONEN UNA PC O LAPTOP EN EL RESTAURANTE (SIN INTERNET)
+------------------------------------------------------------------------
+1. Copia esta carpeta "MISKI APP" en la PC del restaurante (solo necesita
+   tener Node.js instalado).
+2. Haz doble clic en: INICIAR_MISKI_APP.bat
+3. Toca el boton "📱 Conectar Celulares" arriba a la derecha para escanear
+   el Codigo QR desde los telefonos conectados al mismo Wi-Fi del local.
+========================================================================

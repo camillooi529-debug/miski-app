@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Miski App — Pedidos y Cocina en Tiempo Real</title>
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0f172a" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+
+  <!-- PANTALLA DE BLOQUEO PRIVADA (PROTECCIÓN CONTRA EL PÚBLICO) -->
+  <div id="authOverlay" class="modal-backdrop open" style="background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(14px); z-index: 999;">
+    <div class="modal-content" style="max-width: 390px; text-align: center; border: 1.5px solid var(--primary);">
+      <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, #f97316, #dc2626); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 12px;">
+        🔒
+      </div>
+      <h2 style="font-size: 1.3rem; font-weight: 900; margin-bottom: 4px;">MISKI APP PRIVADO</h2>
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">
+        Acceso exclusivo para personal autorizado y administrador.
+      </p>
+
+      <form onsubmit="handlePinLogin(event)" style="display:flex; flex-direction:column; gap:12px;">
+        <input
+          type="password"
+          id="pinLoginInput"
+          class="input-field"
+          placeholder="Ingresa tu PIN de acceso..."
+          inputmode="numeric"
+          style="text-align:center; font-size:1.35rem; font-weight:900; letter-spacing:6px; padding:12px;"
+          required
+        />
+        <div id="pinLoginError" style="color:var(--danger); font-size:0.82rem; font-weight:700; display:none;"></div>
+        <button type="submit" class="btn-send-kitchen" style="margin-top:0;">
+          🔓 Entrar al Sistema
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- BARRA SUPERIOR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-logo">🍽️</div>
+        <div>
+          <div class="brand-title">MISKI APP <span id="roleBadgeHeader" style="font-size:0.7rem; background:var(--bg-surface); padding:2px 7px; border-radius:6px; vertical-align:middle;"></span></div>
+          <div class="brand-sub">
+            <span id="connDot" class="status-dot"></span>
+            <span id="connText">Conectado en vivo</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SELECTOR DE MODO (MESERO / COCINA / STOCK / ADMIN) -->
+      <nav class="role-tabs">
+        <button class="role-tab active" data-view="waiter" onclick="switchView('waiter')">
+          📝 Mesero
+        </button>
+        <button class="role-tab" data-view="kitchen" onclick="switchView('kitchen')">
+          👨‍🍳 Cocina <span id="kitchenBadge" class="badge-count" style="display:none">0</span>
+        </button>
+        <button class="role-tab" data-view="stock" onclick="switchView('stock')">
+          📦 Stock / Menú
+        </button>
+        <button id="adminTabBtn" class="role-tab" data-view="admin" onclick="switchView('admin')" style="display:none; border:1px solid var(--warning);">
+          👑 Admin
+        </button>
+      </nav>
+
+      <div class="top-actions">
+        <button class="btn-icon" onclick="testSound()" title="Probar campana de alerta">
+          🔔 <span id="soundBtnLabel">Sonido</span>
+        </button>
+        <button class="btn-icon" onclick="openConnectModal()">
+          📱 Conectar
+        </button>
+        <button class="btn-icon" onclick="logoutSession()" title="Bloquear o cambiar de usuario" style="border-color:var(--danger); color:#f87171;">
+          🔒 Salir
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR DE NOTIFICACIONES -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <main class="container">
+
+    <!-- ==========================================
+         VISTA 1: MESERO (TOMA DE PEDIDOS)
+         ========================================== -->
+    <section id="view-waiter" class="view-section active">
+      <!-- Alertas en vivo de Pedidos Listos para Recoger en Cocina -->
+      <div id="waiterReadyBanners" style="margin-bottom: 12px;"></div>
+
+      <div class="waiter-layout">
+
+        <!-- Columna Izquierda: Mesas y Menú -->
+        <div>
+          <!-- 1. Selección de Mesa -->
+          <div class="panel-card">
+            <div class="section-label">
+              <span>1. Selecciona Mesa o Cliente</span>
+              <span id="selectedTableDisplay" style="color: var(--primary); font-size:0.9rem;">Mesa 1</span>
+            </div>
+            <div id="tablesGrid" class="tables-grid"></div>
+            <div class="custom-table-row">
+              <input
+                type="text"
+                id="customTableInput"
+                class="input-field"
+                placeholder="¿Otra mesa o nombre de cliente para llevar? Escríbelo aquí..."
+                oninput="onCustomTableInput(this.value)"
+              />
+            </div>
+          </div>
+
+          <!-- 2. Selección de Productos -->
+          <div class="panel-card">
+            <div class="section-label">
+              <span>2. Toca los Platos para Agregar al Pedido</span>
+              <span id="stockSummaryMini" style="font-weight:600; text-transform:none;"></span>
+            </div>
+
+            <div style="margin-bottom: 10px;">
+              <input
+                type="text"
+                id="searchProductInput"
+                class="input-field"
+                placeholder="🔍 Buscar plato o bebida..."
+                oninput="renderWaiterProducts()"
+              />
+            </div>
+
+            <div id="categoryPills" class="category-pills"></div>
+            <div id="waiterProductsGrid" class="products-grid"></div>
+          </div>
+
+          <!-- Pedidos Activos Recientes (Para seguimiento del mesero) -->
+          <div class="panel-card">
+            <div class="section-label">
+              <span>📋 Pedidos en Cocina Ahora Mismo</span>
+              <span id="waiterActiveCount">0 activos</span>
+            </div>
+            <div id="waiterActiveOrdersList"></div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Comanda Actual -->
+        <div id="cartSection" class="panel-card cart-box">
+          <div class="section-label">
+            <span>🧾 Comanda Actual</span>
+            <button
+              onclick="clearCart()"
+              style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700; font-size:0.78rem;"
+            >
+              Vaciar
+            </button>
+          </div>
+
+          <div style="margin-bottom: 10px; display:flex; justify-content:space-between; align-items:center; background:var(--bg-dark); padding:10px 12px; border-radius:10px;">
+            <span style="color:var(--text-muted); font-size:0.85rem; font-weight:700;">Destino:</span>
+            <span id="cartTableBadge" style="font-weight:900; color:var(--primary); font-size:1.05rem;">Mesa 1</span>
+          </div>
+
+          <div id="cartItemsContainer"></div>
+
+          <div style="margin-top: 12px;">
+            <input
+              type="text"
+              id="generalOrderNote"
+              class="input-field"
+              placeholder="📌 Nota general del pedido (ej. Urgente / Todo para llevar)..."
+            />
+          </div>
+
+          <button id="btnSendOrder" class="btn-send-kitchen" onclick="submitOrderToKitchen()" disabled>
+            🚀 ENVIAR PEDIDO A COCINA
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Barra flotante móvil -->
+      <div id="mobileCartBar" class="mobile-cart-bar" onclick="scrollToCart()">
+        <span id="mobileCartText">🛒 0 productos en el pedido</span>
+        <span>Ver y Enviar ➔</span>
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 2: PANTALLA DE COCINA
+         ========================================== -->
+    <section id="view-kitchen" class="view-section">
+      <div class="kitchen-toolbar">
+        <div class="filter-tabs">
+          <button id="kFilterActive" class="filter-btn active" onclick="setKitchenFilter('active')">
+            🔥 Pendientes en Cocina (<span id="kCountActive">0</span>)
+          </button>
+          <button id="kFilterDone" class="filter-btn" onclick="setKitchenFilter('done')">
+            ✅ Finalizados / Entregados (<span id="kCountDone">0</span>)
+          </button>
+        </div>
+
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="font-size:0.82rem; color:var(--text-muted);">
+            💡 Toca cada plato para tacharlo o pulsa <b>"Finalizar / Entregado"</b> al despachar
+          </span>
+        </div>
+      </div>
+
+      <div id="kitchenOrdersGrid" class="kitchen-grid"></div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 3: STOCK Y MENÚ (ENCARGADO)
+         ========================================== -->
+    <section id="view-stock" class="view-section">
+      <div class="stock-header-Grid">
+
+        <!-- Lista de Productos y Control de Cantidades -->
+        <div>
+          <div class="panel-card">
+            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px;">
+              <div>
+                <h2 style="font-size:1.15rem; font-weight:800;">📦 Control de Stock y Cantidades del Día</h2>
+                <p style="font-size:0.83rem; color:var(--text-muted); margin-top:3px;">
+                  Opcional al iniciar la jornada o modificable a media jornada. Los meseros ven en vivo cuánto queda.
+                </p>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn-icon" onclick="resetShiftOrders()" style="border-color:var(--warning); color:#fbbf24;">
+                  🌅 Iniciar Nueva Jornada
+                </button>
+                <button class="btn-icon" onclick="clearAllMenuPrompt()" style="border-color:var(--danger); color:#f87171;">
+                  🗑️ Borrar Menú Actual
+                </button>
+              </div>
+            </div>
+
+            <div id="stockProductsList" class="stock-list"></div>
+          </div>
+        </div>
+
+        <!-- Formulario para que el Encargado Agregue Platos desde su Celular -->
+        <div id="menuEditorColumn" style="position:sticky; top:76px; display:flex; flex-direction:column; gap:14px;">
+          <div class="panel-card" style="margin-bottom:0;">
+            <div class="section-label">
+              <span>➕ Agregar Plato o Bebida (1 por 1)</span>
+            </div>
+
+            <form onsubmit="handleAddProduct(event)" style="display:flex; flex-direction:column; gap:12px;">
+              <div>
+                <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700; display:block; margin-bottom:5px;">
+                  Nombre del Plato / Producto *
+                </label>
+                <input
+                  type="text"
+                  id="newProdName"
+                  class="input-field"
+                  placeholder="Ej. Ceviche Mixto, Arroz con Pollo..."
+                  required
+                />
+              </div>
+
+              <div>
+                <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700; display:block; margin-bottom:5px;">
+                  Categoría
+                </label>
+                <input
+                  type="text"
+                  id="newProdCategory"
+                  class="input-field"
+                  list="categorySuggestions"
+                  placeholder="Ej. Platos Fuertes, Entradas, Bebidas..."
+                  value="Platos Fuertes"
+                  required
+                />
+                <datalist id="categorySuggestions"></datalist>
+              </div>
+
+              <div style="background:var(--bg-dark); padding:12px; border-radius:10px; border:1px solid var(--border);">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-weight:700; font-size:0.9rem;">
+                  <input
+                    type="checkbox"
+                    id="newProdTrackStock"
+                    style="width:18px; height:18px;"
+                    onchange="document.getElementById('newProdStockRow').style.display = this.checked ? 'block' : 'none'"
+                  />
+                  ¿Definir cantidad límite hoy? (Opcional)
+                </label>
+
+                <div id="newProdStockRow" style="display:none; margin-top:10px;">
+                  <label style="font-size:0.78rem; color:var(--text-muted); display:block; margin-bottom:4px;">
+                    Cantidad inicial disponible:
+                  </label>
+                  <input
+                    type="number"
+                    id="newProdStock"
+                    class="input-field"
+                    value="20"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <button type="submit" class="btn-send-kitchen" style="margin-top:4px; padding:12px;">
+                💾 Guardar en el Menú
+              </button>
+            </form>
+          </div>
+
+          <!-- Carga Rápida por Lista (Ideal para pegar desde WhatsApp en el celular) -->
+          <div class="panel-card" style="margin-bottom:0;">
+            <div class="section-label">
+              <span>⚡ Pegar Lista Rápida (Desde WhatsApp)</span>
+            </div>
+            <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:8px;">
+              El encargado puede pegar varios platos a la vez (uno por línea). Si le pone coma y número, se activa esa cantidad automáticamente:
+            </p>
+            <textarea
+              id="bulkProductsText"
+              class="input-field"
+              rows="4"
+              placeholder="Ejemplo:&#10;Arroz con Mariscos, 25&#10;Jalea Mixta, 15&#10;Limonada Frozen"
+              style="resize:vertical; font-family:inherit; margin-bottom:8px;"
+            ></textarea>
+            <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+              <input
+                type="text"
+                id="bulkDefaultCategory"
+                class="input-field"
+                list="categorySuggestions"
+                placeholder="Categoría (ej. Platos Fuertes)"
+                value="Platos Fuertes"
+              />
+            </div>
+            <button type="button" class="btn-icon" style="width:100%; justify-content:center; background:var(--primary); color:#fff; border:none; padding:11px;" onclick="handleBulkAddProducts()">
+              ⚡ Cargar Todos los Platos de la Lista
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ==========================================
+         VISTA 4: PANEL DE ADMINISTRADOR EXCLUSIVO
+         ========================================== -->
+    <section id="view-admin" class="view-section">
+      <div class="stock-header-Grid">
+
+        <!-- Columna Izquierda: Seguridad, Pines y Accesos -->
+        <div>
+          <div class="panel-card" style="border-color: var(--warning);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+              <div>
+                <h2 style="font-size:1.2rem; font-weight:900; color:#fbbf24;">👑 Panel Maestro de Administrador</h2>
+                <p style="font-size:0.84rem; color:var(--text-muted); margin-top:2px;">
+                  Solo tú tienes acceso a esta sección. Controla quién puede entrar a la aplicación y ve el resumen de la jornada.
+                </p>
+              </div>
+              <button class="btn-icon" onclick="revokeAllDevicesNow()" style="background:rgba(239,68,68,0.2); border-color:var(--danger); color:#f87171;">
+                🚫 Expulsar Todos los Teléfonos Ahora
+              </button>
+            </div>
+
+            <form onsubmit="saveAdminSecurity(event)" style="display:flex; flex-direction:column; gap:14px;">
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:12px;">
+                <div style="background:var(--bg-dark); padding:14px; border-radius:12px; border:1px solid var(--border);">
+                  <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700; display:block; margin-bottom:6px;">
+                    🔑 PIN para Encargados / Meseros / Cocina
+                  </label>
+                  <input
+                    type="text"
+                    id="adminStaffPinInput"
+                    class="input-field"
+                    placeholder="Ej. 1234"
+                    style="font-size:1.2rem; font-weight:900; color:#34d399;"
+                    required
+                  />
+                  <small style="color:var(--text-muted); font-size:0.74rem; display:block; margin-top:5px;">
+                    Pásale este código únicamente a tu equipo. Si lo cambias, los anteriores quedan fuera al instante.
+                  </small>
+                </div>
+
+                <div style="background:var(--bg-dark); padding:14px; border-radius:12px; border:1px solid var(--border);">
+                  <label style="font-size:0.8rem; color:var(--text-muted); font-weight:700; display:block; margin-bottom:6px;">
+                    👑 Tu PIN Maestro de Administrador (Secreto)
+                  </label>
+                  <input
+                    type="text"
+                    id="adminMasterPinInput"
+                    class="input-field"
+                    placeholder="Ej. 9999"
+                    style="font-size:1.2rem; font-weight:900; color:#fbbf24;"
+                    required
+                  />
+                  <small style="color:var(--text-muted); font-size:0.74rem; display:block; margin-top:5px;">
+                    Con este PIN entras tú para ver este panel y controlar todo el sistema.
+                  </small>
+                </div>
+              </div>
+
+              <div style="background:var(--bg-dark); padding:14px; border-radius:12px; border:1px solid var(--border); display:flex; flex-direction:column; gap:10px;">
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; font-size:0.92rem;">
+                  <input type="checkbox" id="adminAllowMenuEdit" style="width:18px; height:18px;" checked />
+                  <span>Permitir que los Encargados agreguen, editen o borren platos del Menú</span>
+                </label>
+
+                <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; font-size:0.92rem; color:#f87171;">
+                  <input type="checkbox" id="adminLockSystem" style="width:18px; height:18px;" />
+                  <span>🔒 Cerrar Sistema temporalmente (Bloquea el acceso al personal fuera de horario)</span>
+                </label>
+              </div>
+
+              <button type="submit" class="btn-send-kitchen" style="margin-top:0;">
+                💾 Guardar Cambios de Seguridad y Accesos
+              </button>
+            </form>
+          </div>
+
+          <!-- Reporte de Platos Despachados en la Jornada -->
+          <div class="panel-card">
+            <div class="section-label">
+              <span>📊 Conteo de Platos Pedidos / Entregados en la Jornada</span>
+            </div>
+            <div id="adminDishesReport"></div>
+          </div>
+        </div>
+
+        <!-- Columna Derecha: Resumen Rápido de Jornada -->
+        <div class="panel-card" style="position:sticky; top:76px;">
+          <div class="section-label">
+            <span>📈 Resumen de Operación</span>
+          </div>
+          <div id="adminSummaryStats" style="display:flex; flex-direction:column; gap:10px;"></div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL PARA CONECTAR TELÉFONOS -->
+  <div id="connectModal" class="modal-backdrop" onclick="if(event.target===this) closeConnectModal()">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:1.15rem; font-weight:800;">📱 Cómo abrir en los Teléfonos</h3>
+        <button class="btn-icon" onclick="closeConnectModal()">✖</button>
+      </div>
+
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">
+        Conecta los teléfonos de los meseros y el de la cocina a la <b>misma red Wi-Fi (o Zona Wi-Fi / Hotspot de un celular)</b> y abre cualquiera de estos enlaces en su navegador:
+      </p>
+
+      <div id="networkLinksContainer" style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;"></div>
+
+      <div style="background:var(--bg-dark); border:1px solid var(--border); padding:12px; border-radius:10px; font-size:0.82rem; color:var(--text-muted);">
+        💡 <b>Tip para los encargados:</b> Una vez abierto en el teléfono, en el navegador toca <b>"Agregar a la pantalla de inicio"</b> para que quede instalado como una App directa.
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

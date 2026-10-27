@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: miski-app-pedidos
+    env: node
+    plan: free
+    buildCommand: echo "Listo"
+    startCommand: node server.js

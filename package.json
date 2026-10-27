@@ -1,0 +1,12 @@
+{
+  "name": "miski-app",
+  "version": "1.0.0",
+  "description": "Sistema de Toma de Pedidos (Mesero -> Cocina) y Control de Stock en Tiempo Real para Restaurante Miski",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

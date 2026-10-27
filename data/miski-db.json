@@ -1,0 +1,96 @@
+{
+  "orderSequence": 0,
+  "categories": [
+    "Platos Fuertes",
+    "Entradas",
+    "Bebidas",
+    "Extras / Porciones"
+  ],
+  "tables": [
+    "Mesa 1",
+    "Mesa 2",
+    "Mesa 3",
+    "Mesa 4",
+    "Mesa 5",
+    "Mesa 6",
+    "Mesa 7",
+    "Mesa 8",
+    "Barra",
+    "Para Llevar"
+  ],
+  "products": [
+    {
+      "id": "prod_1",
+      "name": "Plato Especial Miski",
+      "category": "Platos Fuertes",
+      "trackStock": true,
+      "stock": 20,
+      "active": true
+    },
+    {
+      "id": "prod_2",
+      "name": "Pollo a la Plancha con Guarnición",
+      "category": "Platos Fuertes",
+      "trackStock": true,
+      "stock": 15,
+      "active": true
+    },
+    {
+      "id": "prod_3",
+      "name": "Lomo Saltado Clásico",
+      "category": "Platos Fuertes",
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_4",
+      "name": "Sopa / Entrada del Día",
+      "category": "Entradas",
+      "trackStock": true,
+      "stock": 25,
+      "active": true
+    },
+    {
+      "id": "prod_5",
+      "name": "Tequeños / Empanaditas (x4)",
+      "category": "Entradas",
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_6",
+      "name": "Chicha Morada / Limonada (Vaso)",
+      "category": "Bebidas",
+      "trackStock": true,
+      "stock": 30,
+      "active": true
+    },
+    {
+      "id": "prod_7",
+      "name": "Jarra de Refresco Familiar",
+      "category": "Bebidas",
+      "trackStock": true,
+      "stock": 10,
+      "active": true
+    },
+    {
+      "id": "prod_8",
+      "name": "Gaseosa Personal",
+      "category": "Bebidas",
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_9",
+      "name": "Porción Extra de Papas / Arroz",
+      "category": "Extras / Porciones",
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    }
+  ],
+  "orders": []
+}

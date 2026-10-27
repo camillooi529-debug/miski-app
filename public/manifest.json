@@ -1,0 +1,10 @@
+{
+  "name": "Miski App - Pedidos y Cocina",
+  "short_name": "Miski App",
+  "description": "Toma de pedidos para meseros y pantalla de cocina en tiempo real",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#ea580c",
+  "orientation": "any"
+}
