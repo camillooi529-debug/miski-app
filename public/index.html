@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Miski App — Pedidos y Cocina en Tiempo Real</title>
   <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  <link rel="apple-touch-icon" href="/icon.svg" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0f172a" />
   <link rel="stylesheet" href="/styles.css" />
 </head>
@@ -70,11 +74,14 @@
       </nav>
 
       <div class="top-actions">
+        <button id="installAppBtn" class="btn-icon" onclick="installPWA()" style="background:var(--primary); color:#fff; border:none; display:none;" title="Instalar Miski App en el teléfono">
+          📲 <span>Instalar App</span>
+        </button>
         <button class="btn-icon" onclick="testSound()" title="Probar o silenciar campana">
           🔔 <span id="soundBtnLabel" class="hide-mobile-text">Sonido</span>
         </button>
-        <button class="btn-icon" onclick="openConnectModal()" title="Compartir link o QR">
-          📱 <span class="hide-mobile-text">Conectar</span>
+        <button class="btn-icon" onclick="openConnectModal()" title="Compartir link, Instalar App o QR">
+          📱 <span class="hide-mobile-text">Conectar / App</span>
         </button>
         <button class="btn-icon" onclick="logoutSession()" title="Cambiar PIN / Salir" style="border-color:var(--danger); color:#f87171;">
           🔒 <span class="hide-mobile-text">Salir</span>
@@ -481,22 +488,28 @@
 
   </main>
 
-  <!-- MODAL PARA CONECTAR TELÉFONOS -->
+  <!-- MODAL PARA CONECTAR E INSTALAR EN TELÉFONOS -->
   <div id="connectModal" class="modal-backdrop" onclick="if(event.target===this) closeConnectModal()">
     <div class="modal-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <h3 style="font-size:1.15rem; font-weight:800;">📱 Cómo abrir en los Teléfonos</h3>
+        <h3 style="font-size:1.1rem; font-weight:900;">📱 Instalar App y Conectar Equipos</h3>
         <button class="btn-icon" onclick="closeConnectModal()">✖</button>
       </div>
 
-      <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">
-        Conecta los teléfonos de los meseros y el de la cocina a la <b>misma red Wi-Fi (o Zona Wi-Fi / Hotspot de un celular)</b> y abre cualquiera de estos enlaces en su navegador:
-      </p>
+      <button
+        type="button"
+        class="btn-send-kitchen"
+        style="margin-top:0; margin-bottom:14px; padding:13px;"
+        onclick="installPWA()"
+      >
+        📲 Instalar Miski App en este Dispositivo
+      </button>
 
-      <div id="networkLinksContainer" style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;"></div>
+      <div id="networkLinksContainer" style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px;"></div>
 
-      <div style="background:var(--bg-dark); border:1px solid var(--border); padding:12px; border-radius:10px; font-size:0.82rem; color:var(--text-muted);">
-        💡 <b>Tip para los encargados:</b> Una vez abierto en el teléfono, en el navegador toca <b>"Agregar a la pantalla de inicio"</b> para que quede instalado como una App directa.
+      <div style="background:var(--bg-dark); border:1px solid var(--border); padding:11px; border-radius:10px; font-size:0.8rem; color:var(--text-muted);">
+        💡 <b>En Android (Chrome):</b> Toca el botón verde de arriba o el menú <b>⋮ ➔ Instalar aplicación</b>.<br/>
+        💡 <b>En iPhone (Safari):</b> Toca el botón <b>Compartir ➔ Agregar a inicio</b>.
       </div>
     </div>
   </div>

@@ -6,7 +6,7 @@ echo ==========================================================
 echo     INICIANDO MISKI APP (SISTEMA MESERO Y COCINA)
 echo ==========================================================
 echo.
-echo Abriendo el navegador en http://localhost:3000 ...
-start "" "http://localhost:3000"
+echo Abriendo el navegador en Modo Red Local (http://localhost:3000/?local=1) ...
+start "" "http://localhost:3000/?local=1&pin=9999"
 node server.js
 pause

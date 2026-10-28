@@ -1531,6 +1531,39 @@ function saveFirebaseCloudUrl() {
   }
 }
 
+// =========================================================
+// INSTALACIÓN DE APP EN CELULARES (PWA / WEBAPK)
+// =========================================================
+let deferredInstallPrompt = null;
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const installBtn = document.getElementById('installAppBtn');
+  if (installBtn) installBtn.style.display = 'inline-flex';
+});
+
+async function installPWA() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    if (outcome === 'accepted') {
+      showToast('📲 ¡Instalando Miski App en tu teléfono!');
+      const installBtn = document.getElementById('installAppBtn');
+      if (installBtn) installBtn.style.display = 'none';
+    }
+    deferredInstallPrompt = null;
+  } else {
+    showToast('📲 En tu navegador toca el menú (⋮) arriba a la derecha y elige "Instalar aplicación" o "Agregar a pantalla de inicio"');
+  }
+}
+
 // Inicializar vista guardada y conectar
 window.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
