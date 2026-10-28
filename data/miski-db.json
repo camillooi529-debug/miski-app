@@ -1,10 +1,12 @@
 {
   "orderSequence": 0,
   "categories": [
-    "Platos Fuertes",
-    "Entradas",
-    "Bebidas",
-    "Extras / Porciones"
+    "Pizzas",
+    "Especialidades y Salados",
+    "Postres y Tortas",
+    "Bebidas Calientes",
+    "Bebidas Frías",
+    "Helados"
   ],
   "tables": [
     "Mesa 1",
@@ -21,72 +23,621 @@
   "products": [
     {
       "id": "prod_1",
-      "name": "Plato Especial Miski",
-      "category": "Platos Fuertes",
-      "trackStock": true,
-      "stock": 20,
+      "name": "Pizza Hawaiana - Personal (4 porc.)",
+      "category": "Pizzas",
+      "price": 20000,
+      "trackStock": false,
+      "stock": 0,
       "active": true
     },
     {
       "id": "prod_2",
-      "name": "Pollo a la Plancha con Guarnición",
-      "category": "Platos Fuertes",
-      "trackStock": true,
-      "stock": 15,
+      "name": "Pizza Hawaiana - Mediana (8 porc.)",
+      "category": "Pizzas",
+      "price": 36000,
+      "trackStock": false,
+      "stock": 0,
       "active": true
     },
     {
       "id": "prod_3",
-      "name": "Lomo Saltado Clásico",
-      "category": "Platos Fuertes",
+      "name": "Pizza Hawaiana - Familiar (12 porc.)",
+      "category": "Pizzas",
+      "price": 58000,
       "trackStock": false,
       "stock": 0,
       "active": true
     },
     {
       "id": "prod_4",
-      "name": "Sopa / Entrada del Día",
-      "category": "Entradas",
-      "trackStock": true,
-      "stock": 25,
+      "name": "Pizza Pollo y Champiñones - Personal (4 porc.)",
+      "category": "Pizzas",
+      "price": 22000,
+      "trackStock": false,
+      "stock": 0,
       "active": true
     },
     {
       "id": "prod_5",
-      "name": "Tequeños / Empanaditas (x4)",
-      "category": "Entradas",
+      "name": "Pizza Pollo y Champiñones - Mediana (8 porc.)",
+      "category": "Pizzas",
+      "price": 38000,
       "trackStock": false,
       "stock": 0,
       "active": true
     },
     {
       "id": "prod_6",
-      "name": "Chicha Morada / Limonada (Vaso)",
-      "category": "Bebidas",
-      "trackStock": true,
-      "stock": 30,
+      "name": "Pizza Pollo y Champiñones - Familiar (12 porc.)",
+      "category": "Pizzas",
+      "price": 65000,
+      "trackStock": false,
+      "stock": 0,
       "active": true
     },
     {
       "id": "prod_7",
-      "name": "Jarra de Refresco Familiar",
-      "category": "Bebidas",
-      "trackStock": true,
-      "stock": 10,
+      "name": "Pizza Mediterránea - Personal (4 porc.)",
+      "category": "Pizzas",
+      "price": 22000,
+      "trackStock": false,
+      "stock": 0,
       "active": true
     },
     {
       "id": "prod_8",
-      "name": "Gaseosa Personal",
-      "category": "Bebidas",
+      "name": "Pizza Mediterránea - Mediana (8 porc.)",
+      "category": "Pizzas",
+      "price": 40000,
       "trackStock": false,
       "stock": 0,
       "active": true
     },
     {
       "id": "prod_9",
-      "name": "Porción Extra de Papas / Arroz",
-      "category": "Extras / Porciones",
+      "name": "Pizza Mediterránea - Familiar (12 porc.)",
+      "category": "Pizzas",
+      "price": 70000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_10",
+      "name": "Pizza Jamón y Queso - Personal (4 porc.)",
+      "category": "Pizzas",
+      "price": 20000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_11",
+      "name": "Pizza Jamón y Queso - Mediana (8 porc.)",
+      "category": "Pizzas",
+      "price": 36000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_12",
+      "name": "Pizza Jamón y Queso - Familiar (12 porc.)",
+      "category": "Pizzas",
+      "price": 58000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_13",
+      "name": "Adición para Pizza",
+      "category": "Pizzas",
+      "price": 4000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_14",
+      "name": "Sándwich Tipo Italiano (Ciabatta, Pesto, Cherry, Salami, Jamón, Rúcula, Queso)",
+      "category": "Especialidades y Salados",
+      "price": 24000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_15",
+      "name": "Wafle de Pandebono (2 Toppings)",
+      "category": "Especialidades y Salados",
+      "price": 15000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_16",
+      "name": "Wafle de Pandebono con Helado",
+      "category": "Especialidades y Salados",
+      "price": 18000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_17",
+      "name": "Minibonos (x5 Unidades)",
+      "category": "Especialidades y Salados",
+      "price": 6000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_18",
+      "name": "Topping Adicional (Wafles)",
+      "category": "Especialidades y Salados",
+      "price": 800,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_19",
+      "name": "Torta de Arándanos (Porción)",
+      "category": "Postres y Tortas",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_20",
+      "name": "Torta de Chocolate (Porción)",
+      "category": "Postres y Tortas",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_21",
+      "name": "Torta de Red Velvet (Porción)",
+      "category": "Postres y Tortas",
+      "price": 13000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_22",
+      "name": "Cheesecake (Porción)",
+      "category": "Postres y Tortas",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_23",
+      "name": "Torta de Banano (Porción)",
+      "category": "Postres y Tortas",
+      "price": 5000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_24",
+      "name": "Torta de Naranja con Semillas de Amapola",
+      "category": "Postres y Tortas",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_25",
+      "name": "Torta de Zanahoria, Coco y Piña",
+      "category": "Postres y Tortas",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_26",
+      "name": "Torta de Zanahoria con Frosting",
+      "category": "Postres y Tortas",
+      "price": 13000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_27",
+      "name": "Alfajores",
+      "category": "Postres y Tortas",
+      "price": 4000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_28",
+      "name": "Milhoja",
+      "category": "Postres y Tortas",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_29",
+      "name": "Americano (Tinto)",
+      "category": "Bebidas Calientes",
+      "price": 5000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_30",
+      "name": "Affogato",
+      "category": "Bebidas Calientes",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_31",
+      "name": "Capuchino Tradicional",
+      "category": "Bebidas Calientes",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_32",
+      "name": "Capuchino Vainilla",
+      "category": "Bebidas Calientes",
+      "price": 10000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_33",
+      "name": "Capuchino Amaretto",
+      "category": "Bebidas Calientes",
+      "price": 10000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_34",
+      "name": "Expresso",
+      "category": "Bebidas Calientes",
+      "price": 5000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_35",
+      "name": "Latte Caliente",
+      "category": "Bebidas Calientes",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_36",
+      "name": "Latte Frío",
+      "category": "Bebidas Calientes",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_37",
+      "name": "Mocca",
+      "category": "Bebidas Calientes",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_38",
+      "name": "Chocolate Caliente",
+      "category": "Bebidas Calientes",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_39",
+      "name": "Chocolate con Queso",
+      "category": "Bebidas Calientes",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_40",
+      "name": "Aromática",
+      "category": "Bebidas Calientes",
+      "price": 4000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_41",
+      "name": "Té Hindú",
+      "category": "Bebidas Calientes",
+      "price": 4000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_42",
+      "name": "Vaso de Leche",
+      "category": "Bebidas Calientes",
+      "price": 3000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_43",
+      "name": "Migao Miski (Chocolate, Pandebono, Buñuelo, Galleta, Mozarella y Cuajada)",
+      "category": "Bebidas Calientes",
+      "price": 17000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_44",
+      "name": "Granizado de Café",
+      "category": "Bebidas Frías",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_45",
+      "name": "Granizado de Café con Helado",
+      "category": "Bebidas Frías",
+      "price": 15000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_46",
+      "name": "Limonada Natural",
+      "category": "Bebidas Frías",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_47",
+      "name": "Limonada de Coco",
+      "category": "Bebidas Frías",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_48",
+      "name": "Limonada Cerezada",
+      "category": "Bebidas Frías",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_49",
+      "name": "Lulada",
+      "category": "Bebidas Frías",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_50",
+      "name": "Soda Italiana Frutos Rojos",
+      "category": "Bebidas Frías",
+      "price": 13000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_51",
+      "name": "Soda Italiana Frutos Amarillos",
+      "category": "Bebidas Frías",
+      "price": 13000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_52",
+      "name": "Milo Frío",
+      "category": "Bebidas Frías",
+      "price": 12000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_53",
+      "name": "Jugo Natural en Agua (Mango/Mora/Lulo Frape)",
+      "category": "Bebidas Frías",
+      "price": 8000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_54",
+      "name": "Jugo Natural en Leche (Mango/Mora/Lulo Frape)",
+      "category": "Bebidas Frías",
+      "price": 10000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_55",
+      "name": "Coca Cola (Lata)",
+      "category": "Bebidas Frías",
+      "price": 4000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_56",
+      "name": "Coca Cola 1.5 Lt",
+      "category": "Bebidas Frías",
+      "price": 10000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_57",
+      "name": "Botella de Agua",
+      "category": "Bebidas Frías",
+      "price": 2000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_58",
+      "name": "Botella de Agua con Gas",
+      "category": "Bebidas Frías",
+      "price": 2500,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_59",
+      "name": "Jugo Hit Cajita",
+      "category": "Bebidas Frías",
+      "price": 2500,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_60",
+      "name": "Bretaña Personal",
+      "category": "Bebidas Frías",
+      "price": 4000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_61",
+      "name": "Hatsu",
+      "category": "Bebidas Frías",
+      "price": 5000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_62",
+      "name": "Cerveza Stella Artois",
+      "category": "Bebidas Frías",
+      "price": 6000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_63",
+      "name": "Cerveza Coronita",
+      "category": "Bebidas Frías",
+      "price": 5000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_64",
+      "name": "Helado 1 Bola",
+      "category": "Helados",
+      "price": 3500,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_65",
+      "name": "Helado 2 Bolas",
+      "category": "Helados",
+      "price": 7000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_66",
+      "name": "Torta de Chocolate con Helado",
+      "category": "Helados",
+      "price": 15000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_67",
+      "name": "Banana Split (3 Bolas de Helado)",
+      "category": "Helados",
+      "price": 15000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_68",
+      "name": "Copa Tropical (Con Fruta de Temporada)",
+      "category": "Helados",
+      "price": 15000,
+      "trackStock": false,
+      "stock": 0,
+      "active": true
+    },
+    {
+      "id": "prod_69",
+      "name": "Helado Figura Infantil",
+      "category": "Helados",
+      "price": 12000,
       "trackStock": false,
       "stock": 0,
       "active": true

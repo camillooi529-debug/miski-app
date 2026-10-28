@@ -608,6 +608,7 @@ function renderWaiterProducts() {
         <div class="prod-info-col">
           <div class="prod-name">${escapeHtml(p.name)}</div>
           <div class="prod-meta-row">
+            ${p.price ? `<span style="font-weight:900; color:var(--miski-gold); font-size:0.86rem; margin-right:4px;">$${Number(p.price).toLocaleString('es-CO')}</span>` : ''}
             ${badgeHtml}
             <span class="prod-cat-tag">· ${escapeHtml(p.category)}</span>
           </div>
@@ -663,6 +664,7 @@ function addToCart(productId) {
     cart.push({
       productId: product.id,
       name: product.name,
+      price: Number(product.price) || 0,
       quantity: 1,
       note: ''
     });
@@ -737,14 +739,21 @@ function renderCart() {
     return;
   }
 
+  const totalMoney = cart.reduce((acc, i) => acc + (Number(i.price || 0) * i.quantity), 0);
+  const totalFormatted = totalMoney > 0 ? `$${totalMoney.toLocaleString('es-CO')}` : '';
+
   sendBtn.disabled = false;
+  sendBtn.innerHTML = `🚀 ENVIAR PEDIDO A COCINA ${totalFormatted ? `(${totalFormatted})` : ''}`;
   mobileBar.classList.add('visible');
-  mobileText.textContent = `🛒 ${totalItems} plato(s) para ${selectedTable}`;
+  mobileText.textContent = `🛒 ${totalItems} plato(s) ${totalFormatted ? `· ${totalFormatted}` : ''} para ${selectedTable}`;
 
   container.innerHTML = cart.map((item, idx) => `
     <div class="cart-item">
       <div class="cart-item-top">
-        <span class="cart-item-title">${escapeHtml(item.name)}</span>
+        <div>
+          <span class="cart-item-title">${escapeHtml(item.name)}</span>
+          ${item.price ? `<div style="font-size:0.75rem; color:var(--miski-gold); font-weight:800;">$${Number(item.price).toLocaleString('es-CO')} c/u ${item.quantity > 1 ? `· Subtotal: $${(item.price * item.quantity).toLocaleString('es-CO')}` : ''}</div>` : ''}
+        </div>
         <div class="qty-controls">
           <button type="button" class="qty-btn" onclick="changeCartQty(${idx}, -1)">−</button>
           <span class="qty-num">${item.quantity}</span>
