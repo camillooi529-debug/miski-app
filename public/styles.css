@@ -180,6 +180,30 @@ body {
 }
 
 @media (max-width: 768px) {
+  .topbar {
+    padding: 6px 8px;
+  }
+
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+
+  .brand-title {
+    font-size: 0.86rem;
+    gap: 4px;
+  }
+
+  .top-actions {
+    gap: 4px;
+  }
+
+  .btn-icon {
+    padding: 6px 7px;
+    font-size: 0.74rem;
+  }
+
   .role-tabs {
     position: fixed;
     bottom: 0;
@@ -203,6 +227,40 @@ body {
   .hide-mobile-text {
     display: none;
   }
+}
+
+body.force-mobile .role-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 120;
+  border-radius: 0;
+  border: none;
+  border-top: 1px solid var(--border);
+  background: #0f172a;
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+  justify-content: space-around;
+}
+
+body.force-mobile .role-tab {
+  flex: 1;
+  padding: 8px 4px;
+  font-size: 0.76rem;
+}
+
+body.force-mobile .hide-mobile-text {
+  display: none;
+}
+
+body.force-mobile .waiter-layout,
+body.force-mobile .stock-header-Grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 10px;
+}
+
+body.force-mobile .mobile-cart-bar.visible {
+  display: flex;
 }
 
 /* ==========================================

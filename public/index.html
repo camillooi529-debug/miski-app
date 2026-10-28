@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Miski App — Pedidos y Cocina en Tiempo Real</title>
-  <link rel="manifest" href="/manifest.json?v=6" />
+  <link rel="manifest" href="/manifest.json?v=7" />
   <link rel="icon" type="image/png" href="/icon-192.png" />
   <link rel="apple-touch-icon" href="/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0f172a" />
-  <link rel="stylesheet" href="/styles.css?v=6" />
+  <link rel="stylesheet" href="/styles.css?v=7" />
 </head>
 <body>
 
@@ -70,6 +70,17 @@
             <small style="font-size:0.74rem; font-weight:600; opacity:0.92;">Recibir pedidos con sonido y despachar platos</small>
           </button>
         </div>
+      </div>
+
+      <!-- BOTÓN DIRECTO PARA INSTALAR EN EL TELÉFONO SIN SALIR DE VISTA MÓVIL -->
+      <div id="authInstallBanner" style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border);">
+        <button
+          type="button"
+          onclick="openInstallHelpModal()"
+          style="width:100%; background: rgba(249,115,22,0.16); border: 1.5px solid var(--primary); color: #fdba74; padding: 10px 12px; border-radius: 10px; font-size: 0.85rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;"
+        >
+          📲 Instalar App en este Teléfono
+        </button>
       </div>
 
     </div>
@@ -574,7 +585,7 @@
     </div>
   </div>
 
-  <script src="/cloud-config.js?v=6"></script>
-  <script src="/app.js?v=6"></script>
+  <script src="/cloud-config.js?v=7"></script>
+  <script src="/app.js?v=7"></script>
 </body>
 </html>

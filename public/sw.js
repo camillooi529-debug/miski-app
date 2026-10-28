@@ -1,4 +1,4 @@
-const CACHE_NAME = 'miski-app-v4';
+const CACHE_NAME = 'miski-app-v7';
 
 self.addEventListener('install', () => {
   self.skipWaiting();
@@ -14,5 +14,7 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(fetch(event.request));
+  event.respondWith(
+    fetch(event.request, { cache: 'no-store' }).catch(() => caches.match(event.request))
+  );
 });

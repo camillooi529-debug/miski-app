@@ -672,14 +672,17 @@ const server = http.createServer(async (req, res) => {
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
     res.writeHead(200, {
       'Content-Type': contentType,
-      'Cache-Control': 'no-cache'
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
     });
     fs.createReadStream(filePath).pipe(res);
   } else {
     // Fallback SPA a index.html
     const indexPath = path.join(PUBLIC_DIR, 'index.html');
     if (fs.existsSync(indexPath)) {
-      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+      });
       fs.createReadStream(indexPath).pipe(res);
     } else {
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });

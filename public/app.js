@@ -1610,13 +1610,57 @@ function saveFirebaseCloudUrl() {
 }
 
 // =========================================================
-// INSTALACIÓN DE APP EN CELULARES (PWA / WEBAPK)
+// INSTALACIÓN DE APP EN CELULARES (PWA / WEBAPK) Y DETECCIÓN DE MODO ESCRITORIO
 // =========================================================
 let deferredInstallPrompt = null;
 
+function isInstalledStandaloneApp() {
+  return (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+  );
+}
+
+function checkMobileDesktopModeAndScale() {
+  const smallPhysicalScreen = Math.min(window.screen.width || 1000, window.screen.height || 1000) <= 550;
+  const isMobileUA = /Android|iPhone|iPod|Mobile/i.test(navigator.userAgent || '');
+  const isTouchPhone = navigator.maxTouchPoints > 0 && (smallPhysicalScreen || isMobileUA);
+
+  const currentZoom = parseFloat(document.documentElement.style.zoom) || 1;
+  const unzoomedWidth = Math.round(window.innerWidth * currentZoom);
+
+  // Si es un teléfono físico pero Chrome tiene activado "Sitio para computadora" (ancho real > 680px)
+  if (isTouchPhone && unzoomedWidth > 680) {
+    document.body.classList.add('force-mobile');
+    const targetWidth = 390;
+    const scaleFactor = Math.max(1.8, Math.min(2.7, unzoomedWidth / targetWidth));
+    if (Math.abs(currentZoom - scaleFactor) > 0.05) {
+      document.documentElement.style.zoom = scaleFactor.toFixed(2);
+    }
+  } else if (!isTouchPhone || unzoomedWidth <= 680) {
+    document.body.classList.remove('force-mobile');
+    if (document.documentElement.style.zoom) {
+      document.documentElement.style.zoom = '';
+    }
+  }
+
+  // Ocultar botón de instalar si ya está dentro de la App instalada
+  const installBtn = document.getElementById('installAppBtn');
+  const authInstallBanner = document.getElementById('authInstallBanner');
+  if (isInstalledStandaloneApp()) {
+    if (installBtn) installBtn.style.display = 'none';
+    if (authInstallBanner) authInstallBanner.style.display = 'none';
+  } else {
+    if (installBtn) installBtn.style.display = 'inline-flex';
+    if (authInstallBanner) authInstallBanner.style.display = 'block';
+  }
+}
+
+window.addEventListener('resize', checkMobileDesktopModeAndScale);
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    navigator.serviceWorker.register('/sw.js?v=7').catch(() => {});
   });
 }
 
@@ -1624,7 +1668,9 @@ window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredInstallPrompt = e;
   const installBtn = document.getElementById('installAppBtn');
-  if (installBtn) installBtn.style.display = 'inline-flex';
+  if (installBtn && !isInstalledStandaloneApp()) {
+    installBtn.style.display = 'inline-flex';
+  }
 });
 
 async function installPWA() {
@@ -1656,6 +1702,7 @@ function closeInstallHelpModal() {
 
 // Inicializar vista guardada y conectar
 window.addEventListener('DOMContentLoaded', async () => {
+  checkMobileDesktopModeAndScale();
   const params = new URLSearchParams(window.location.search);
 
   // Si abren localhost en la PC teniendo internet y no forzaron ?local=1, redirigir a la Nube oficial
