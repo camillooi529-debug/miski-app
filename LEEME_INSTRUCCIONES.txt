@@ -1,36 +1,46 @@
 ========================================================================
-              🍽️ MISKI APP - GUIA RAPIDA DE USO
+          🍽️ MISKI APP - ACCESOS Y GUIA RAPIDA DE USO
 ========================================================================
 
-Tienes 3 formas de usar Miski App segun lo que necesites:
+🌐 ENLACE OFICIAL EN LA NUBE 24/7 (Funciona con tu PC apagada):
+👉 https://miski-app-pedidos.onrender.com
 
-------------------------------------------------------------------------
-MODO 1: USAR EN OTRA RED / CON DATOS MOVILES SIN CREAR CUENTAS (RAPIDO)
-------------------------------------------------------------------------
-1. Haz doble clic en: MODO_INTERNET_OTRA_RED.bat
-2. Se abrira una ventana con un Codigo QR gigante y un link que termina
-   en ".lhr.life" (por ejemplo: https://a1b2c3d4.lhr.life).
-3. Mandale ese link por WhatsApp a los encargados.
-4. Ellos podran abrirlo desde sus celulares en CUALQUIER otra red Wi-Fi
-   o con sus propios datos moviles (4G/5G), meter los productos, tomar
-   pedidos en Mesero y finalizarlos en Cocina.
+🔑 CODIGOS PIN DE ACCESO INICIALES (Puedes cambiarlos en la pestaña Admin):
+- PIN para Encargados / Meseros / Cocina:  1234
+- Tu PIN Maestro de Administrador (Secreto): 9999
 
-------------------------------------------------------------------------
-MODO 2: DEJARLO EN LA NUBE 24/7 (CON TU PC APAGADA) - GRATIS
-------------------------------------------------------------------------
-Esta carpeta ya incluye el archivo "render.yaml" listo para la nube:
-1. Sube esta carpeta a un repositorio en GitHub.com.
-2. Entra gratis a https://render.com -> "New Web Service" -> Conecta tu
-   repositorio.
-3. Render te dara un link fijo para siempre (ej: https://miski.onrender.com)
-   que funciona las 24 horas aunque tu computadora este apagada.
+========================================================================
+COMO TRABAJAN LOS ENCARGADOS, MESEROS Y COCINA (EN CUALQUIER RED):
+========================================================================
+1. Pasales por WhatsApp el link:
+   https://miski-app-pedidos.onrender.com
+   y el PIN de Personal (1234).
+2. Ellos lo abren en el navegador de su telefono (Android o iPhone) y
+   le dan a "Agregar a la pantalla de inicio" para que les quede como
+   una App instalada.
+3. En la pestaña "📦 Stock / Menu", el encargado mete los productos y
+   las cantidades del dia (o las modifica a media jornada con +5 / +10).
+4. En "📝 Mesero", toman el pedido de la mesa y lo envian.
+5. En "👨‍🍳 Cocina", suena el timbre corto, preparan el plato, tocan
+   "🔔 ¡Listo! Llamar Mesero" (le avisa al celular del mesero) y al
+   entregarlo tocan "✅ Entregado".
 
-------------------------------------------------------------------------
-MODO 3: SI PONEN UNA PC O LAPTOP EN EL RESTAURANTE (SIN INTERNET)
-------------------------------------------------------------------------
-1. Copia esta carpeta "MISKI APP" en la PC del restaurante (solo necesita
-   tener Node.js instalado).
-2. Haz doble clic en: INICIAR_MISKI_APP.bat
-3. Toca el boton "📱 Conectar Celulares" arriba a la derecha para escanear
-   el Codigo QR desde los telefonos conectados al mismo Wi-Fi del local.
+========================================================================
+COMO LO ADMINISTRAS TU (CON TU .EXE O TU CELULAR):
+========================================================================
+1. Abre "MiskiApp_Administrador.exe" en tu computadora y toca el boton
+   azul "☁️ Abrir Miski App en la Nube (Modo Administrador)".
+   (O entra desde tu celular a https://miski-app-pedidos.onrender.com
+   y pon tu PIN Maestro 9999).
+2. En tu pestaña exclusiva "👑 Admin" puedes:
+   - Cambiar el PIN del personal o el tuyo cuando quieras.
+   - Expulsar a todos los telefonos conectados en 1 segundo.
+   - Bloquear el sistema fuera de horario.
+   - Ver el reporte de cuantos pedidos y platos se han despachado.
+
+========================================================================
+MODO LOCAL (SI ALGUN DIA LLEVAN UNA PC AL RESTAURANTE SIN INTERNET):
+========================================================================
+1. En "MiskiApp_Administrador.exe", usa el boton verde:
+   "👑 Encender Servidor en esta PC y Abrir Admin Local".
 ========================================================================

@@ -172,10 +172,13 @@ function handleIncomingState(newState, eventType, extra = {}) {
   // Detectar si llegó un pedido nuevo o si un pedido fue finalizado/entregado
   if (!isFirstLoad && currentRole && Array.isArray(newState.orders)) {
     const newOrders = newState.orders.filter(o => !knownOrderIds.has(o.id) && o.status === 'pendiente');
-    if (newOrders.length > 0) {
-      playKitchenBell();
+    if (newOrders.length > 0 && eventType !== 'LOCAL_SUBMIT') {
+      // Sonar solo si este dispositivo está en modo Cocina (o Admin)
+      if (currentView === 'kitchen' || currentView === 'admin') {
+        playKitchenBell();
+      }
       const newest = newOrders[0];
-      showToast(`🔔 ¡Nuevo Pedido #${newest.orderNumber} (${newest.table})!`);
+      showToast(`🔔 ¡Nuevo Pedido #${newest.orderNumber} (${newest.table}) en Cocina!`);
     }
 
     if (eventType === 'ORDER_STATUS_CHANGED' && extra.order) {
@@ -474,37 +477,47 @@ function renderWaiterProducts() {
     return `
       <div
         class="product-card ${inCartQty > 0 ? 'in-cart' : ''} ${isOut ? 'out-of-stock' : ''}"
-        onclick="${canAddMore ? `addToCart('${p.id}')` : ''}"
+        onclick="${canAddMore && inCartQty === 0 ? `addToCart('${p.id}')` : ''}"
       >
-        <div>
-          <div class="prod-header">
-            <div>
-              <div class="prod-name">${escapeHtml(p.name)}</div>
-              <div class="prod-cat-tag">${escapeHtml(p.category)}</div>
-            </div>
-            ${badgeHtml}
+        <div class="prod-header">
+          <div>
+            <div class="prod-name">${escapeHtml(p.name)}</div>
+            <div class="prod-cat-tag">${escapeHtml(p.category)}</div>
           </div>
+          ${badgeHtml}
         </div>
 
         <div class="prod-footer">
-          <button
-            type="button"
-            class="btn-add-prod"
-            ${!canAddMore ? 'disabled' : ''}
-            onclick="event.stopPropagation(); addToCart('${p.id}')"
-          >
-            ${
-              isOut
-                ? 'Sin Stock'
-                : inCartQty > 0
-                ? `En pedido (${inCartQty}) — Toca para +1`
-                : '+ Agregar al Pedido'
-            }
-          </button>
+          ${
+            inCartQty > 0
+              ? `
+                <div class="inline-qty-bar" onclick="event.stopPropagation()">
+                  <button type="button" class="inline-qty-btn" onclick="removeOneFromCart('${p.id}')">−</button>
+                  <span class="inline-qty-val">En pedido: ${inCartQty}</span>
+                  <button type="button" class="inline-qty-btn" ${!canAddMore ? 'disabled style="opacity:0.4"' : ''} onclick="addToCart('${p.id}')">+</button>
+                </div>
+              `
+              : `
+                <button
+                  type="button"
+                  class="btn-add-prod"
+                  ${!canAddMore ? 'disabled' : ''}
+                  onclick="event.stopPropagation(); addToCart('${p.id}')"
+                >
+                  ${isOut ? 'Sin Stock' : '+ Agregar al Pedido'}
+                </button>
+              `
+          }
         </div>
       </div>
     `;
   }).join('');
+}
+
+function removeOneFromCart(productId) {
+  const idx = cart.findIndex(item => item.productId === productId);
+  if (idx === -1) return;
+  changeCartQty(idx, -1);
 }
 
 function addToCart(productId) {
@@ -1521,6 +1534,16 @@ function saveFirebaseCloudUrl() {
 // Inicializar vista guardada y conectar
 window.addEventListener('DOMContentLoaded', async () => {
   const params = new URLSearchParams(window.location.search);
+
+  // Si abren localhost en la PC teniendo internet y no forzaron ?local=1, redirigir a la Nube oficial
+  // para que la PC y los celulares vean exactamente los mismos pedidos siempre.
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  if (isLocal && navigator.onLine && !params.get('local')) {
+    const cloudTarget = 'https://miski-app-pedidos.onrender.com' + window.location.search;
+    window.location.replace(cloudTarget);
+    return;
+  }
+
   const autoDb = params.get('db');
   if (autoDb && autoDb.startsWith('https://')) {
     window.MISKI_FIREBASE_DB_URL = autoDb.trim().replace(/\/+$/, '');

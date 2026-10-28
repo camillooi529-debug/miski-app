@@ -70,14 +70,14 @@
       </nav>
 
       <div class="top-actions">
-        <button class="btn-icon" onclick="testSound()" title="Probar campana de alerta">
-          🔔 <span id="soundBtnLabel">Sonido</span>
+        <button class="btn-icon" onclick="testSound()" title="Probar o silenciar campana">
+          🔔 <span id="soundBtnLabel" class="hide-mobile-text">Sonido</span>
         </button>
-        <button class="btn-icon" onclick="openConnectModal()">
-          📱 Conectar
+        <button class="btn-icon" onclick="openConnectModal()" title="Compartir link o QR">
+          📱 <span class="hide-mobile-text">Conectar</span>
         </button>
-        <button class="btn-icon" onclick="logoutSession()" title="Bloquear o cambiar de usuario" style="border-color:var(--danger); color:#f87171;">
-          🔒 Salir
+        <button class="btn-icon" onclick="logoutSession()" title="Cambiar PIN / Salir" style="border-color:var(--danger); color:#f87171;">
+          🔒 <span class="hide-mobile-text">Salir</span>
         </button>
       </div>
     </div>
@@ -183,10 +183,21 @@
 
       </div>
 
-      <!-- Barra flotante móvil -->
-      <div id="mobileCartBar" class="mobile-cart-bar" onclick="scrollToCart()">
-        <span id="mobileCartText">🛒 0 productos en el pedido</span>
-        <span>Ver y Enviar ➔</span>
+      <!-- Barra flotante móvil con botón de Envío Directo -->
+      <div id="mobileCartBar" class="mobile-cart-bar">
+        <div onclick="scrollToCart()" style="cursor:pointer; flex:1; min-width:0;">
+          <div id="mobileCartText" style="font-weight:900; font-size:0.88rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+            🛒 0 platos
+          </div>
+          <div style="font-size:0.72rem; color:#fdba74;">📝 Toca aquí para poner notas</div>
+        </div>
+        <button
+          type="button"
+          onclick="submitOrderToKitchen()"
+          style="background:var(--success); color:#fff; border:none; padding:10px 14px; border-radius:10px; font-weight:900; font-size:0.86rem; cursor:pointer; white-space:nowrap; box-shadow:0 4px 12px rgba(16,185,129,0.4);"
+        >
+          🚀 Enviar a Cocina
+        </button>
       </div>
     </section>
 
