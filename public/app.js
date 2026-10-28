@@ -28,6 +28,84 @@ let soundEnabled = true;
 
 const QUICK_NOTES = ['Sin cebolla', 'Para llevar', 'Bien cocido', 'Sin picante', 'Sin ensalada'];
 
+const MISKI_PRICES = {
+  "Pizza Hawaiana - Personal (4 porc.)": 20000,
+  "Pizza Hawaiana - Mediana (8 porc.)": 36000,
+  "Pizza Hawaiana - Familiar (12 porc.)": 58000,
+  "Pizza Pollo y Champiñones - Personal (4 porc.)": 22000,
+  "Pizza Pollo y Champiñones - Mediana (8 porc.)": 38000,
+  "Pizza Pollo y Champiñones - Familiar (12 porc.)": 65000,
+  "Pizza Mediterránea - Personal (4 porc.)": 22000,
+  "Pizza Mediterránea - Mediana (8 porc.)": 40000,
+  "Pizza Mediterránea - Familiar (12 porc.)": 70000,
+  "Pizza Jamón y Queso - Personal (4 porc.)": 20000,
+  "Pizza Jamón y Queso - Mediana (8 porc.)": 36000,
+  "Pizza Jamón y Queso - Familiar (12 porc.)": 58000,
+  "Adición para Pizza": 4000,
+  "Sándwich Tipo Italiano (Ciabatta, Pesto, Cherry, Salami, Jamón, Rúcula, Queso)": 24000,
+  "Wafle de Pandebono (2 Toppings)": 15000,
+  "Wafle de Pandebono con Helado": 18000,
+  "Minibonos (x5 Unidades)": 6000,
+  "Topping Adicional (Wafles)": 800,
+  "Torta de Arándanos (Porción)": 12000,
+  "Torta de Chocolate (Porción)": 12000,
+  "Torta de Red Velvet (Porción)": 13000,
+  "Cheesecake (Porción)": 12000,
+  "Torta de Banano (Porción)": 5000,
+  "Torta de Naranja con Semillas de Amapola": 8000,
+  "Torta de Zanahoria, Coco y Piña": 8000,
+  "Torta de Zanahoria con Frosting": 13000,
+  "Alfajores": 4000,
+  "Milhoja": 8000,
+  "Americano (Tinto)": 5000,
+  "Affogato": 8000,
+  "Capuchino Tradicional": 8000,
+  "Capuchino Vainilla": 10000,
+  "Capuchino Amaretto": 10000,
+  "Expresso": 5000,
+  "Latte Caliente": 8000,
+  "Latte Frío": 12000,
+  "Mocca": 12000,
+  "Chocolate Caliente": 8000,
+  "Chocolate con Queso": 12000,
+  "Aromática": 4000,
+  "Té Hindú": 4000,
+  "Vaso de Leche": 3000,
+  "Migao Miski (Chocolate, Pandebono, Buñuelo, Galleta, Mozarella y Cuajada)": 17000,
+  "Granizado de Café": 12000,
+  "Granizado de Café con Helado": 15000,
+  "Limonada Natural": 8000,
+  "Limonada de Coco": 12000,
+  "Limonada Cerezada": 12000,
+  "Lulada": 12000,
+  "Soda Italiana Frutos Rojos": 13000,
+  "Soda Italiana Frutos Amarillos": 13000,
+  "Milo Frío": 12000,
+  "Jugo Natural en Agua (Mango/Mora/Lulo Frape)": 8000,
+  "Jugo Natural en Leche (Mango/Mora/Lulo Frape)": 10000,
+  "Coca Cola (Lata)": 4000,
+  "Coca Cola 1.5 Lt": 10000,
+  "Botella de Agua": 2000,
+  "Botella de Agua con Gas": 2500,
+  "Jugo Hit Cajita": 2500,
+  "Bretaña Personal": 4000,
+  "Hatsu": 5000,
+  "Cerveza Stella Artois": 6000,
+  "Cerveza Coronita": 5000,
+  "Helado 1 Bola": 3500,
+  "Helado 2 Bolas": 7000,
+  "Torta de Chocolate con Helado": 15000,
+  "Banana Split (3 Bolas de Helado)": 15000,
+  "Copa Tropical (Con Fruta de Temporada)": 15000,
+  "Helado Figura Infantil": 12000
+};
+
+function getProductPrice(p) {
+  if (!p) return 0;
+  return Number(p.price) || MISKI_PRICES[p.name] || 0;
+}
+
+
 // =========================================================
 // SONIDO DE CAMPANA PARA COCINA (100% OFFLINE CON WEB AUDIO)
 // =========================================================
@@ -537,7 +615,8 @@ function renderCategories() {
   const datalist = document.getElementById('categorySuggestions');
   if (!pillsContainer) return;
 
-  const cats = ['TODOS', ...appState.categories];
+  const activeCats = Array.from(new Set(appState.products.filter(p => p.active).map(p => p.category)));
+  const cats = ['TODOS', ...activeCats];
   pillsContainer.innerHTML = cats.map(c => `
     <button
       type="button"
@@ -608,7 +687,7 @@ function renderWaiterProducts() {
         <div class="prod-info-col">
           <div class="prod-name">${escapeHtml(p.name)}</div>
           <div class="prod-meta-row">
-            ${p.price ? `<span style="font-weight:900; color:var(--miski-gold); font-size:0.86rem; margin-right:4px;">$${Number(p.price).toLocaleString('es-CO')}</span>` : ''}
+            ${getProductPrice(p) ? `<span style="font-weight:900; color:var(--miski-gold); font-size:0.86rem; margin-right:4px;">$${Number(getProductPrice(p)).toLocaleString('es-CO')}</span>` : ''}
             ${badgeHtml}
             <span class="prod-cat-tag">· ${escapeHtml(p.category)}</span>
           </div>
@@ -664,7 +743,7 @@ function addToCart(productId) {
     cart.push({
       productId: product.id,
       name: product.name,
-      price: Number(product.price) || 0,
+      price: getProductPrice(product),
       quantity: 1,
       note: ''
     });
@@ -1717,7 +1796,7 @@ window.addEventListener('resize', checkMobileDesktopModeAndScale);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?v=20').catch(() => {});
+    navigator.serviceWorker.register('/sw.js?v=25').catch(() => {});
   });
 }
 
