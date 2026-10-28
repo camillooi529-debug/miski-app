@@ -610,22 +610,50 @@ function onCustomTableInput(val) {
   renderWaiterTables();
 }
 
+const CATEGORY_META = {
+  'TODOS': { label: 'Todos', emoji: '✨' },
+  'Pizzas': { label: 'Pizzas', emoji: '🍕' },
+  'Especialidades y Salados': { label: 'Salados', emoji: '🥪' },
+  'Postres y Tortas': { label: 'Postres', emoji: '🍰' },
+  'Bebidas Calientes': { label: 'Calientes', emoji: '☕' },
+  'Bebidas Frías': { label: 'Frías', emoji: '🥤' },
+  'Helados': { label: 'Helados', emoji: '🍨' }
+};
+
 function renderCategories() {
   const pillsContainer = document.getElementById('categoryPills');
   const datalist = document.getElementById('categorySuggestions');
   if (!pillsContainer) return;
 
-  const activeCats = Array.from(new Set(appState.products.filter(p => p.active).map(p => p.category)));
-  const cats = ['TODOS', ...activeCats];
-  pillsContainer.innerHTML = cats.map(c => `
-    <button
-      type="button"
-      class="cat-pill ${selectedCategory === c ? 'active' : ''}"
-      onclick="selectCategory('${escapeHtml(c)}')"
-    >
-      ${escapeHtml(c)}
-    </button>
-  `).join('');
+  const activeProducts = appState.products.filter(p => p.active);
+  const orderPref = ['Pizzas', 'Especialidades y Salados', 'Postres y Tortas', 'Bebidas Calientes', 'Bebidas Frías', 'Helados'];
+  const presentCats = Array.from(new Set(activeProducts.map(p => p.category)));
+  presentCats.sort((a, b) => {
+    const idxA = orderPref.indexOf(a);
+    const idxB = orderPref.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b);
+  });
+
+  const cats = ['TODOS', ...presentCats];
+  pillsContainer.innerHTML = cats.map(c => {
+    const meta = CATEGORY_META[c] || { label: c, emoji: '🍽️' };
+    const count = c === 'TODOS' ? activeProducts.length : activeProducts.filter(p => p.category === c).length;
+    const isActive = selectedCategory === c;
+    return `
+      <button
+        type="button"
+        class="cat-pill ${isActive ? 'active' : ''}"
+        onclick="selectCategory('${escapeHtml(c)}')"
+      >
+        <span>${meta.emoji}</span>
+        <span>${escapeHtml(meta.label)}</span>
+        <span class="cat-pill-count">(${count})</span>
+      </button>
+    `;
+  }).join('');
 
   if (datalist) {
     datalist.innerHTML = appState.categories.map(c => `<option value="${escapeHtml(c)}">`).join('');
@@ -638,69 +666,66 @@ function selectCategory(cat) {
   renderWaiterProducts();
 }
 
+function onSearchInputChanged() {
+  const input = document.getElementById('searchProductInput');
+  const clearBtn = document.getElementById('btnClearSearch');
+  if (clearBtn) {
+    clearBtn.style.display = input && input.value ? 'flex' : 'none';
+  }
+  renderWaiterProducts();
+}
+
+function clearSearchInput() {
+  const input = document.getElementById('searchProductInput');
+  const clearBtn = document.getElementById('btnClearSearch');
+  if (input) input.value = '';
+  if (clearBtn) clearBtn.style.display = 'none';
+  renderWaiterProducts();
+}
+
 function getCartQtyForProduct(productId) {
   return cart
     .filter(item => item.productId === productId)
     .reduce((sum, item) => sum + item.quantity, 0);
 }
 
-function renderWaiterProducts() {
-  const grid = document.getElementById('waiterProductsGrid');
-  if (!grid) return;
+function renderProductCardHtml(p) {
+  const inCartQty = getCartQtyForProduct(p.id);
+  const remainingAfterCart = p.trackStock ? Math.max(0, p.stock - inCartQty) : Infinity;
+  const isOut = p.trackStock && p.stock <= 0;
+  const canAddMore = !p.trackStock || remainingAfterCart > 0;
+  const price = getProductPrice(p);
+  const priceFormatted = price ? `$${Number(price).toLocaleString('es-CO')}` : '';
 
-  const query = (document.getElementById('searchProductInput')?.value || '').toLowerCase().trim();
-
-  const filtered = appState.products.filter(p => {
-    if (!p.active) return false;
-    const matchCat = selectedCategory === 'TODOS' || p.category === selectedCategory;
-    const matchSearch = !query || p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
-    return matchCat && matchSearch;
-  });
-
-  if (filtered.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">No se encontraron productos en esta categoría.</div>`;
-    return;
+  let stockBadgeHtml = '';
+  if (p.trackStock) {
+    if (p.stock <= 0) {
+      stockBadgeHtml = `<span class="stock-badge Empty">Agotado</span>`;
+    } else if (p.stock <= 5) {
+      stockBadgeHtml = `<span class="stock-badge Low">${p.stock} disp.</span>`;
+    }
   }
 
-  grid.innerHTML = filtered.map(p => {
-    const inCartQty = getCartQtyForProduct(p.id);
-    const remainingAfterCart = p.trackStock ? Math.max(0, p.stock - inCartQty) : Infinity;
-    const isOut = p.trackStock && p.stock <= 0;
-    const canAddMore = !p.trackStock || remainingAfterCart > 0;
+  return `
+    <div
+      class="product-card ${inCartQty > 0 ? 'in-cart' : ''} ${isOut ? 'out-of-stock' : ''}"
+      onclick="${canAddMore && inCartQty === 0 ? `addToCart('${p.id}')` : ''}"
+    >
+      <div class="prod-top-info">
+        <div class="prod-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
+        ${stockBadgeHtml ? `<div style="margin-top:2px;">${stockBadgeHtml}</div>` : ''}
+      </div>
 
-    let badgeHtml = '';
-    if (!p.trackStock) {
-      badgeHtml = `<span class="stock-badge free">♾️ Disponible</span>`;
-    } else if (p.stock <= 0) {
-      badgeHtml = `<span class="stock-badge Empty">⛔ AGOTADO (0)</span>`;
-    } else if (p.stock <= 5) {
-      badgeHtml = `<span class="stock-badge Low">⚠️ Quedan: ${p.stock}</span>`;
-    } else {
-      badgeHtml = `<span class="stock-badge Plenty">✅ Quedan: ${p.stock}</span>`;
-    }
-
-    return `
-      <div
-        class="product-card ${inCartQty > 0 ? 'in-cart' : ''} ${isOut ? 'out-of-stock' : ''}"
-        onclick="${canAddMore && inCartQty === 0 ? `addToCart('${p.id}')` : ''}"
-      >
-        <div class="prod-info-col">
-          <div class="prod-name">${escapeHtml(p.name)}</div>
-          <div class="prod-meta-row">
-            ${getProductPrice(p) ? `<span style="font-weight:900; color:var(--miski-gold); font-size:0.86rem; margin-right:4px;">$${Number(getProductPrice(p)).toLocaleString('es-CO')}</span>` : ''}
-            ${badgeHtml}
-            <span class="prod-cat-tag">· ${escapeHtml(p.category)}</span>
-          </div>
-        </div>
-
-        <div class="prod-action-col">
+      <div class="prod-bottom-row">
+        <div class="prod-price-tag">${priceFormatted}</div>
+        <div class="prod-action-area">
           ${
             inCartQty > 0
               ? `
                 <div class="inline-qty-bar" onclick="event.stopPropagation()">
-                  <button type="button" class="inline-qty-btn" onclick="removeOneFromCart('${p.id}')">−</button>
+                  <button type="button" class="inline-qty-btn" onclick="removeOneFromCart('${p.id}')" title="Quitar uno">−</button>
                   <span class="inline-qty-val">${inCartQty}</span>
-                  <button type="button" class="inline-qty-btn" ${!canAddMore ? 'disabled style="opacity:0.4"' : ''} onclick="addToCart('${p.id}')">+</button>
+                  <button type="button" class="inline-qty-btn" ${!canAddMore ? 'disabled style="opacity:0.4"' : ''} onclick="addToCart('${p.id}')" title="Agregar otro">+</button>
                 </div>
               `
               : `
@@ -709,11 +734,83 @@ function renderWaiterProducts() {
                   class="btn-add-prod"
                   ${!canAddMore ? 'disabled' : ''}
                   onclick="event.stopPropagation(); addToCart('${p.id}')"
+                  title="Agregar al pedido"
                 >
-                  ${isOut ? 'Agotado' : '+ Agregar'}
+                  ${isOut ? '0' : '+'}
                 </button>
               `
           }
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderWaiterProducts() {
+  const container = document.getElementById('waiterProductsGrid');
+  if (!container) return;
+
+  const query = (document.getElementById('searchProductInput')?.value || '').toLowerCase().trim();
+
+  // Caso 1: Búsqueda activa
+  if (query) {
+    const filtered = appState.products.filter(p => {
+      if (!p.active) return false;
+      const matchCat = selectedCategory === 'TODOS' || p.category === selectedCategory;
+      const matchSearch = p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
+      return matchCat && matchSearch;
+    });
+
+    if (filtered.length === 0) {
+      container.className = 'products-grid';
+      container.innerHTML = `<div class="empty-state" style="grid-column:1/-1; padding:24px 12px;">No se encontraron productos que coincidan con "${escapeHtml(query)}".</div>`;
+      return;
+    }
+
+    container.className = 'products-grid';
+    container.innerHTML = filtered.map(renderProductCardHtml).join('');
+    return;
+  }
+
+  // Caso 2: Categoría específica seleccionada (diferente de TODOS)
+  if (selectedCategory !== 'TODOS') {
+    const filtered = appState.products.filter(p => p.active && p.category === selectedCategory);
+    if (filtered.length === 0) {
+      container.className = 'products-grid';
+      container.innerHTML = `<div class="empty-state" style="grid-column:1/-1; padding:24px 12px;">No hay productos activos en esta categoría.</div>`;
+      return;
+    }
+    container.className = 'products-grid';
+    container.innerHTML = filtered.map(renderProductCardHtml).join('');
+    return;
+  }
+
+  // Caso 3: Vista TODOS sin búsqueda -> Secciones agrupadas por categoría
+  const activeProducts = appState.products.filter(p => p.active);
+  const orderPref = ['Pizzas', 'Especialidades y Salados', 'Postres y Tortas', 'Bebidas Calientes', 'Bebidas Frías', 'Helados'];
+  const presentCats = Array.from(new Set(activeProducts.map(p => p.category)));
+  presentCats.sort((a, b) => {
+    const idxA = orderPref.indexOf(a);
+    const idxB = orderPref.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b);
+  });
+
+  container.className = 'products-grouped-container';
+  container.innerHTML = presentCats.map(cat => {
+    const items = activeProducts.filter(p => p.category === cat);
+    if (items.length === 0) return '';
+    const meta = CATEGORY_META[cat] || { label: cat, emoji: '🍽️' };
+    return `
+      <div class="category-section-group">
+        <div class="category-section-header" onclick="selectCategory('${escapeHtml(cat)}')" title="Toca para ver solo ${escapeHtml(cat)}">
+          <span>${meta.emoji} ${escapeHtml(cat)}</span>
+          <span class="cat-sec-badge">${items.length} platos ➔</span>
+        </div>
+        <div class="products-grid">
+          ${items.map(renderProductCardHtml).join('')}
         </div>
       </div>
     `;
@@ -721,6 +818,9 @@ function renderWaiterProducts() {
 }
 
 function removeOneFromCart(productId) {
+  if (navigator.vibrate) {
+    try { navigator.vibrate(15); } catch (e) {}
+  }
   const idx = cart.findIndex(item => item.productId === productId);
   if (idx === -1) return;
   changeCartQty(idx, -1);
@@ -734,6 +834,10 @@ function addToCart(productId) {
   if (product.trackStock && currentQty >= product.stock) {
     showToast(`⚠️ Solo quedan ${product.stock} unidades de "${product.name}"`);
     return;
+  }
+
+  if (navigator.vibrate) {
+    try { navigator.vibrate(25); } catch (e) {}
   }
 
   const existing = cart.find(item => item.productId === productId);
@@ -752,6 +856,7 @@ function addToCart(productId) {
   renderWaiterProducts();
   renderCart();
 }
+
 
 function changeCartQty(index, delta) {
   const item = cart[index];

@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-title" content="Miski App" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="theme-color" content="#f6efe5" />
-  <link rel="stylesheet" href="/styles.css?v=25" />
+  <link rel="stylesheet" href="/styles.css?v=26" />
 </head>
 <body>
 
@@ -185,14 +185,15 @@
               <span id="stockSummaryMini" style="font-weight:600; text-transform:none;"></span>
             </div>
 
-            <div style="margin-bottom: 10px;">
+            <div class="search-box-wrapper">
               <input
                 type="text"
                 id="searchProductInput"
-                class="input-field"
-                placeholder="🔍 Buscar plato o bebida..."
-                oninput="renderWaiterProducts()"
+                class="input-field search-input-with-clear"
+                placeholder="🔍 Buscar plato o bebida (ej. Pizza, Café)..."
+                oninput="onSearchInputChanged()"
               />
+              <button id="btnClearSearch" type="button" class="btn-clear-search" onclick="clearSearchInput()" style="display:none;" title="Borrar búsqueda">✕</button>
             </div>
 
             <div id="categoryPills" class="category-pills"></div>
@@ -619,7 +620,7 @@
     </div>
   </div>
 
-  <script src="/cloud-config.js?v=25"></script>
-  <script src="/app.js?v=25"></script>
+  <script src="/cloud-config.js?v=26"></script>
+  <script src="/app.js?v=26"></script>
 </body>
 </html>
