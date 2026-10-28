@@ -4,68 +4,100 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Miski App — Pedidos y Cocina en Tiempo Real</title>
-  <link rel="manifest" href="/manifest.json?v=5" />
+  <link rel="manifest" href="/manifest.json?v=6" />
   <link rel="icon" type="image/png" href="/icon-192.png" />
   <link rel="apple-touch-icon" href="/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0f172a" />
-  <link rel="stylesheet" href="/styles.css?v=5" />
+  <link rel="stylesheet" href="/styles.css?v=6" />
 </head>
 <body>
 
-  <!-- PANTALLA DE BLOQUEO PRIVADA (PROTECCIÓN CONTRA EL PÚBLICO) -->
+  <!-- PANTALLA DE BLOQUEO PRIVADA Y SELECCIÓN DE PERFIL (MESERO VS COCINA) -->
   <div id="authOverlay" class="modal-backdrop open" style="background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(14px); z-index: 999;">
     <div class="modal-content" style="max-width: 390px; text-align: center; border: 1.5px solid var(--primary);">
-      <div style="width: 56px; height: 56px; border-radius: 14px; background: linear-gradient(135deg, #f97316, #dc2626); display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 12px;">
-        🔒
+      <div style="width: 54px; height: 54px; border-radius: 14px; background: linear-gradient(135deg, #f97316, #dc2626); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 10px;">
+        🍽️
       </div>
-      <h2 style="font-size: 1.3rem; font-weight: 900; margin-bottom: 4px;">MISKI APP PRIVADO</h2>
-      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 16px;">
-        Acceso exclusivo para personal autorizado y administrador.
-      </p>
+      <h2 style="font-size: 1.25rem; font-weight: 900; margin-bottom: 4px;">MISKI APP</h2>
 
-      <form onsubmit="handlePinLogin(event)" style="display:flex; flex-direction:column; gap:12px;">
-        <input
-          type="password"
-          id="pinLoginInput"
-          class="input-field"
-          placeholder="Ingresa tu PIN de acceso..."
-          inputmode="numeric"
-          style="text-align:center; font-size:1.35rem; font-weight:900; letter-spacing:6px; padding:12px;"
-          required
-        />
-        <div id="pinLoginError" style="color:var(--danger); font-size:0.82rem; font-weight:700; display:none;"></div>
-        <button type="submit" class="btn-send-kitchen" style="margin-top:0;">
-          🔓 Entrar al Sistema
-        </button>
-      </form>
+      <!-- PASO 1: INGRESAR PIN -->
+      <div id="authStepPin">
+        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;">
+          Acceso exclusivo para personal autorizado y administrador.
+        </p>
+
+        <form onsubmit="handlePinLogin(event)" style="display:flex; flex-direction:column; gap:12px;">
+          <input
+            type="password"
+            id="pinLoginInput"
+            class="input-field"
+            placeholder="Ingresa tu PIN..."
+            inputmode="numeric"
+            style="text-align:center; font-size:1.3rem; font-weight:900; letter-spacing:6px; padding:11px;"
+            required
+          />
+          <div id="pinLoginError" style="color:var(--danger); font-size:0.8rem; font-weight:700; display:none;"></div>
+          <button type="submit" class="btn-send-kitchen" style="margin-top:0;">
+            🔓 Continuar
+          </button>
+        </form>
+      </div>
+
+      <!-- PASO 2: ELEGIR PERFIL EXCLUSIVO (MESERO O COCINA) -->
+      <div id="authStepProfile" style="display:none;">
+        <p style="font-size: 0.86rem; color: var(--text-main); font-weight:700; margin-bottom: 14px;">
+          ¿En qué puesto vas a usar este dispositivo?
+        </p>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button
+            type="button"
+            onclick="selectDeviceProfile('waiter')"
+            style="background: linear-gradient(135deg, #f97316, #ea580c); color:#fff; border:none; padding:16px 14px; border-radius:12px; font-size:1.05rem; font-weight:900; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; box-shadow: 0 4px 14px rgba(249,115,22,0.35);"
+          >
+            <span>📝 SOY MESERO</span>
+            <small style="font-size:0.74rem; font-weight:600; opacity:0.92;">Tomar pedidos y recibir aviso cuando estén listos</small>
+          </button>
+
+          <button
+            type="button"
+            onclick="selectDeviceProfile('kitchen')"
+            style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color:#fff; border:none; padding:16px 14px; border-radius:12px; font-size:1.05rem; font-weight:900; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:4px; box-shadow: 0 4px 14px rgba(37,99,235,0.35);"
+          >
+            <span>👨‍🍳 SOY COCINA (Activar Campana 🔔)</span>
+            <small style="font-size:0.74rem; font-weight:600; opacity:0.92;">Recibir pedidos con sonido y despachar platos</small>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <!-- BARRA SUPERIOR -->
+  <!-- BARRA SUPERIOR 100% FIJA -->
   <header class="topbar">
     <div class="topbar-inner">
       <div class="brand">
         <div class="brand-logo">🍽️</div>
         <div>
-          <div class="brand-title">MISKI APP <span id="roleBadgeHeader" style="font-size:0.7rem; background:var(--bg-surface); padding:2px 7px; border-radius:6px; vertical-align:middle;"></span></div>
+          <div class="brand-title">MISKI <span id="roleBadgeHeader" style="font-size:0.68rem; background:var(--bg-surface); padding:2px 6px; border-radius:5px;"></span></div>
           <div class="brand-sub">
             <span id="connDot" class="status-dot"></span>
-            <span id="connText">Conectado en vivo</span>
+            <span id="connText">En vivo</span>
           </div>
         </div>
       </div>
 
-      <!-- SELECTOR DE MODO (MESERO / COCINA / STOCK / ADMIN) -->
+      <!-- PESTAÑAS SEGÚN EL PERFIL SELECCIONADO -->
       <nav class="role-tabs">
-        <button class="role-tab active" data-view="waiter" onclick="switchView('waiter')">
+        <button id="tabBtnWaiter" class="role-tab active" data-view="waiter" onclick="switchView('waiter')">
           📝 Mesero
         </button>
-        <button class="role-tab" data-view="kitchen" onclick="switchView('kitchen')">
+        <button id="tabBtnKitchen" class="role-tab" data-view="kitchen" onclick="switchView('kitchen')">
           👨‍🍳 Cocina <span id="kitchenBadge" class="badge-count" style="display:none">0</span>
         </button>
-        <button class="role-tab" data-view="stock" onclick="switchView('stock')">
+        <button id="tabBtnStock" class="role-tab" data-view="stock" onclick="switchView('stock')">
           📦 Stock / Menú
         </button>
         <button id="adminTabBtn" class="role-tab" data-view="admin" onclick="switchView('admin')" style="display:none; border:1px solid var(--warning);">
@@ -74,17 +106,17 @@
       </nav>
 
       <div class="top-actions">
-        <button id="installAppBtn" class="btn-icon" onclick="installPWA()" style="background:var(--primary); color:#fff; border:none;" title="Instalar Miski App en el teléfono">
+        <button id="installAppBtn" class="btn-icon" onclick="openInstallHelpModal()" style="background:var(--primary); color:#fff; border:none;">
           📲 <span>Instalar</span>
         </button>
         <button class="btn-icon" onclick="testSound()" title="Probar o silenciar campana">
           🔔 <span id="soundBtnLabel" class="hide-mobile-text">Sonido</span>
         </button>
-        <button class="btn-icon" onclick="openConnectModal()" title="Compartir link, Instalar App o QR">
+        <button class="btn-icon" onclick="openConnectModal()" title="Compartir link o QR">
           📱 <span class="hide-mobile-text">QR</span>
         </button>
-        <button class="btn-icon" onclick="logoutSession()" title="Cambiar PIN / Salir" style="border-color:var(--danger); color:#f87171;">
-          🔒 <span class="hide-mobile-text">Salir</span>
+        <button class="btn-icon" onclick="logoutSession()" title="Cambiar entre Mesero / Cocina / Admin" style="border-color:var(--danger); color:#f87171;">
+          🔄 <span class="hide-mobile-text">Perfil</span>
         </button>
       </div>
     </div>
@@ -514,7 +546,35 @@
     </div>
   </div>
 
-  <script src="/cloud-config.js?v=5"></script>
-  <script src="/app.js?v=5"></script>
+  <!-- MODAL DE INSTRUCCIONES DE INSTALACIÓN (ANDROID E IPHONE) -->
+  <div id="installGuideModal" class="modal-backdrop" onclick="if(event.target===this) closeInstallHelpModal()">
+    <div class="modal-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <h3 style="font-size:1.1rem; font-weight:900;">📲 Cómo instalar Miski App</h3>
+        <button class="btn-icon" onclick="closeInstallHelpModal()">✖</button>
+      </div>
+
+      <div style="background:var(--bg-dark); border:1.5px solid var(--primary); padding:12px; border-radius:10px; margin-bottom:10px;">
+        <div style="font-weight:900; color:#fb923c; margin-bottom:6px;">🤖 En Teléfonos Android (Chrome):</div>
+        <ol style="padding-left:18px; font-size:0.86rem; line-height:1.5;">
+          <li>Toca los <b>3 puntitos verticales (⋮)</b> arriba a la derecha de Chrome.</li>
+          <li>Toca donde dice <b>"Instalar aplicación"</b> o <b>"Agregar a la pantalla principal"</b>.</li>
+          <li>Confirma en <b>Instalar</b> y ya tendrás el ícono en tu celular.</li>
+        </ol>
+      </div>
+
+      <div style="background:var(--bg-dark); border:1.5px solid #60a5fa; padding:12px; border-radius:10px;">
+        <div style="font-weight:900; color:#60a5fa; margin-bottom:6px;">🍏 En iPhone (Safari o Chrome):</div>
+        <ol style="padding-left:18px; font-size:0.86rem; line-height:1.5;">
+          <li>Toca el botón <b>Compartir (📤 el cuadrito con flecha hacia arriba)</b> en la barra del navegador.</li>
+          <li>Baja un poco y toca <b>"➕ Agregar a inicio"</b>.</li>
+          <li>Toca <b>Agregar</b> arriba a la derecha.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <script src="/cloud-config.js?v=6"></script>
+  <script src="/app.js?v=6"></script>
 </body>
 </html>

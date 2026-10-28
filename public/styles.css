@@ -34,17 +34,20 @@ html, body {
 }
 
 body {
+  padding-top: 56px;
   padding-bottom: 150px;
 }
 
 /* ==========================================
-   BARRA SUPERIOR COMPACTA
+   BARRA SUPERIOR 100% FIJA (NUNCA SE ESCONDE AL BAJAR)
    ========================================== */
 .topbar {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
-  background: rgba(15, 23, 42, 0.97);
+  left: 0;
+  right: 0;
+  z-index: 150;
+  background: rgba(15, 23, 42, 0.98);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
   padding: 8px 10px;

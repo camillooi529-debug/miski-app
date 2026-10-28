@@ -13,6 +13,7 @@ let appState = {
 
 let currentView = localStorage.getItem('miski_view') || 'waiter';
 let currentRole = localStorage.getItem('miski_role') || null; // 'admin' | 'staff' | null
+let deviceProfile = localStorage.getItem('miski_device_profile') || null; // 'waiter' | 'kitchen' | 'admin' | null
 let currentSessionVersion = Number(localStorage.getItem('miski_session_v') || 0);
 let savedAdminPin = localStorage.getItem('miski_admin_pin') || '';
 let adminConfigCache = null;
@@ -173,19 +174,22 @@ function handleIncomingState(newState, eventType, extra = {}) {
   if (!isFirstLoad && currentRole && Array.isArray(newState.orders)) {
     const newOrders = newState.orders.filter(o => !knownOrderIds.has(o.id) && o.status === 'pendiente');
     if (newOrders.length > 0 && eventType !== 'LOCAL_SUBMIT') {
-      // Sonar solo si este dispositivo está en modo Cocina (o Admin)
-      if (currentView === 'kitchen' || currentView === 'admin') {
+      // SOLO SONAR Y NOTIFICAR SI ESTE DISPOSITIVO ES COCINA O ADMIN
+      if (deviceProfile === 'kitchen' || currentRole === 'admin') {
         playKitchenBell();
+        const newest = newOrders[0];
+        showToast(`🔔 ¡Nuevo Pedido #${newest.orderNumber} (${newest.table}) en Cocina!`);
       }
-      const newest = newOrders[0];
-      showToast(`🔔 ¡Nuevo Pedido #${newest.orderNumber} (${newest.table}) en Cocina!`);
     }
 
     if (eventType === 'ORDER_STATUS_CHANGED' && extra.order) {
       if (extra.nextStatus === 'listo') {
-        playKitchenBell();
-        if (navigator.vibrate) navigator.vibrate([250, 120, 250]);
-        showToast(`🔔 ¡MESERO! Pedido #${extra.order.orderNumber} (${extra.order.table}) LISTO para recoger`);
+        // SOLO SONAR Y VIBRAR SI ESTE DISPOSITIVO ES MESERO O ADMIN
+        if (deviceProfile === 'waiter' || currentRole === 'admin') {
+          playKitchenBell();
+          if (navigator.vibrate) navigator.vibrate([250, 120, 250]);
+          showToast(`🔔 ¡MESERO! Pedido #${extra.order.orderNumber} (${extra.order.table}) LISTO para recoger`);
+        }
       } else if (extra.nextStatus === 'entregado') {
         showToast(`✅ Pedido #${extra.order.orderNumber} (${extra.order.table}) entregado y cerrado`);
       }
@@ -207,23 +211,39 @@ function handleIncomingState(newState, eventType, extra = {}) {
 }
 
 // =========================================================
-// AUTENTICACIÓN POR PIN Y CONTROL DE ROLES
+// AUTENTICACIÓN POR PIN Y PERFILES SEPARADOS (MESERO VS COCINA)
 // =========================================================
 function syncAuthUI() {
   const overlay = document.getElementById('authOverlay');
+  const stepPin = document.getElementById('authStepPin');
+  const stepProfile = document.getElementById('authStepProfile');
+  const tabWaiter = document.getElementById('tabBtnWaiter');
+  const tabKitchen = document.getElementById('tabBtnKitchen');
   const adminTab = document.getElementById('adminTabBtn');
   const roleBadge = document.getElementById('roleBadgeHeader');
   const menuEditorCol = document.getElementById('menuEditorColumn');
 
   if (!currentRole) {
     overlay.classList.add('open');
+    if (stepPin) stepPin.style.display = 'block';
+    if (stepProfile) stepProfile.style.display = 'none';
     if (roleBadge) roleBadge.textContent = '';
+    return;
+  }
+
+  // Si es personal y aún no ha elegido si este celular es Mesero o Cocina
+  if (currentRole === 'staff' && !deviceProfile) {
+    overlay.classList.add('open');
+    if (stepPin) stepPin.style.display = 'none';
+    if (stepProfile) stepProfile.style.display = 'block';
     return;
   }
 
   overlay.classList.remove('open');
 
   if (currentRole === 'admin') {
+    if (tabWaiter) tabWaiter.style.display = 'flex';
+    if (tabKitchen) tabKitchen.style.display = 'flex';
     if (adminTab) adminTab.style.display = 'flex';
     if (roleBadge) {
       roleBadge.textContent = '👑 ADMIN';
@@ -232,18 +252,42 @@ function syncAuthUI() {
     if (menuEditorCol) menuEditorCol.style.display = 'flex';
   } else {
     if (adminTab) adminTab.style.display = 'none';
-    if (roleBadge) {
-      roleBadge.textContent = 'PERSONAL';
-      roleBadge.style.color = '#34d399';
-    }
     const canEdit = appState.security?.allowStaffMenuEdit !== false;
     if (menuEditorCol) {
       menuEditorCol.style.display = canEdit ? 'flex' : 'none';
     }
-    if (currentView === 'admin') {
-      switchView('waiter');
+
+    if (deviceProfile === 'waiter') {
+      if (tabWaiter) tabWaiter.style.display = 'flex';
+      if (tabKitchen) tabKitchen.style.display = 'none';
+      if (roleBadge) {
+        roleBadge.textContent = '📝 MESERO';
+        roleBadge.style.color = '#fb923c';
+      }
+      if (currentView === 'kitchen' || currentView === 'admin') {
+        currentView = 'waiter';
+        localStorage.setItem('miski_view', 'waiter');
+      }
+    } else if (deviceProfile === 'kitchen') {
+      if (tabWaiter) tabWaiter.style.display = 'none';
+      if (tabKitchen) tabKitchen.style.display = 'flex';
+      if (roleBadge) {
+        roleBadge.textContent = '👨‍🍳 COCINA';
+        roleBadge.style.color = '#60a5fa';
+      }
+      if (currentView === 'waiter' || currentView === 'admin') {
+        currentView = 'kitchen';
+        localStorage.setItem('miski_view', 'kitchen');
+      }
     }
   }
+
+  document.querySelectorAll('.role-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === currentView);
+  });
+  document.querySelectorAll('.view-section').forEach(sec => {
+    sec.classList.toggle('active', sec.id === `view-${currentView}`);
+  });
 }
 
 async function handlePinLogin(e) {
@@ -275,13 +319,18 @@ async function handlePinLogin(e) {
     localStorage.setItem('miski_session_v', String(currentSessionVersion));
 
     if (currentRole === 'admin') {
+      deviceProfile = 'admin';
+      localStorage.setItem('miski_device_profile', 'admin');
       savedAdminPin = pin;
       localStorage.setItem('miski_admin_pin', pin);
       adminConfigCache = data.adminConfig || null;
       populateAdminInputs();
+      initAudio();
       showToast('👑 Bienvenido Administrador');
     } else {
-      showToast('🔓 Acceso autorizado');
+      // Mostrar pantalla para elegir entre Soy Mesero o Soy Cocina
+      deviceProfile = null;
+      localStorage.removeItem('miski_device_profile');
     }
 
     if (input) input.value = '';
@@ -293,10 +342,35 @@ async function handlePinLogin(e) {
   }
 }
 
+function selectDeviceProfile(profile) {
+  deviceProfile = profile;
+  localStorage.setItem('miski_device_profile', profile);
+
+  // Desbloquear parlante del navegador al hacer clic en el botón del perfil
+  initAudio();
+  soundEnabled = true;
+
+  if (profile === 'kitchen') {
+    currentView = 'kitchen';
+    localStorage.setItem('miski_view', 'kitchen');
+    playKitchenBell();
+    showToast('👨‍🍳 Modo Cocina Activo — Campana de pedidos encendida 🔔');
+  } else {
+    currentView = 'waiter';
+    localStorage.setItem('miski_view', 'waiter');
+    showToast('📝 Modo Mesero Activo — Listo para tomar pedidos');
+  }
+
+  syncAuthUI();
+  renderAll();
+}
+
 function logoutSession(customMsg) {
   currentRole = null;
+  deviceProfile = null;
   savedAdminPin = '';
   localStorage.removeItem('miski_role');
+  localStorage.removeItem('miski_device_profile');
   localStorage.removeItem('miski_admin_pin');
   syncAuthUI();
   if (customMsg) {
@@ -313,7 +387,11 @@ function logoutSession(customMsg) {
 // =========================================================
 function switchView(viewName) {
   if (viewName === 'admin' && currentRole !== 'admin') {
-    viewName = 'waiter';
+    viewName = deviceProfile === 'kitchen' ? 'kitchen' : 'waiter';
+  }
+  if (currentRole === 'staff') {
+    if (deviceProfile === 'waiter' && viewName === 'kitchen') viewName = 'waiter';
+    if (deviceProfile === 'kitchen' && viewName === 'waiter') viewName = 'kitchen';
   }
   currentView = viewName;
   localStorage.setItem('miski_view', viewName);
@@ -1555,13 +1633,25 @@ async function installPWA() {
     const { outcome } = await deferredInstallPrompt.userChoice;
     if (outcome === 'accepted') {
       showToast('📲 ¡Instalando Miski App en tu teléfono!');
-      const installBtn = document.getElementById('installAppBtn');
-      if (installBtn) installBtn.style.display = 'none';
     }
     deferredInstallPrompt = null;
   } else {
-    showToast('📲 En tu navegador toca el menú (⋮) arriba a la derecha y elige "Instalar aplicación" o "Agregar a pantalla de inicio"');
+    openInstallHelpModal();
   }
+}
+
+function openInstallHelpModal() {
+  if (deferredInstallPrompt) {
+    installPWA();
+    return;
+  }
+  const modal = document.getElementById('installGuideModal');
+  if (modal) modal.classList.add('open');
+}
+
+function closeInstallHelpModal() {
+  const modal = document.getElementById('installGuideModal');
+  if (modal) modal.classList.remove('open');
 }
 
 // Inicializar vista guardada y conectar
