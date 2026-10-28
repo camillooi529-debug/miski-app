@@ -479,21 +479,21 @@ function renderWaiterProducts() {
         class="product-card ${inCartQty > 0 ? 'in-cart' : ''} ${isOut ? 'out-of-stock' : ''}"
         onclick="${canAddMore && inCartQty === 0 ? `addToCart('${p.id}')` : ''}"
       >
-        <div class="prod-header">
-          <div>
-            <div class="prod-name">${escapeHtml(p.name)}</div>
-            <div class="prod-cat-tag">${escapeHtml(p.category)}</div>
+        <div class="prod-info-col">
+          <div class="prod-name">${escapeHtml(p.name)}</div>
+          <div class="prod-meta-row">
+            ${badgeHtml}
+            <span class="prod-cat-tag">· ${escapeHtml(p.category)}</span>
           </div>
-          ${badgeHtml}
         </div>
 
-        <div class="prod-footer">
+        <div class="prod-action-col">
           ${
             inCartQty > 0
               ? `
                 <div class="inline-qty-bar" onclick="event.stopPropagation()">
                   <button type="button" class="inline-qty-btn" onclick="removeOneFromCart('${p.id}')">−</button>
-                  <span class="inline-qty-val">En pedido: ${inCartQty}</span>
+                  <span class="inline-qty-val">${inCartQty}</span>
                   <button type="button" class="inline-qty-btn" ${!canAddMore ? 'disabled style="opacity:0.4"' : ''} onclick="addToCart('${p.id}')">+</button>
                 </div>
               `
@@ -504,7 +504,7 @@ function renderWaiterProducts() {
                   ${!canAddMore ? 'disabled' : ''}
                   onclick="event.stopPropagation(); addToCart('${p.id}')"
                 >
-                  ${isOut ? 'Sin Stock' : '+ Agregar al Pedido'}
+                  ${isOut ? 'Agotado' : '+ Agregar'}
                 </button>
               `
           }
