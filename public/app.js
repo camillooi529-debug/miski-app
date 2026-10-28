@@ -1708,7 +1708,7 @@ window.addEventListener('resize', checkMobileDesktopModeAndScale);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?v=8').catch(() => {});
+    navigator.serviceWorker.register('/sw.js?v=9').catch(() => {});
   });
 }
 

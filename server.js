@@ -605,7 +605,10 @@ const server = http.createServer(async (req, res) => {
 
     // 8. Configurar categorías o mesas o reiniciar jornada o limpiar menú
     if (pathname === '/api/pull-latest' && (req.method === 'POST' || req.method === 'GET')) {
-      const filesToSync = ['index.html', 'styles.css', 'app.js', 'cloud-config.js', 'manifest.json', 'sw.js'];
+      const filesToSync = [
+        'index.html', 'styles.css', 'app.js', 'cloud-config.js', 'manifest.json', 'sw.js',
+        'logo.png', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'favicon.png'
+      ];
       const baseRaw = 'https://raw.githubusercontent.com/camillooi529-debug/miski-app/main/public';
       for (const f of filesToSync) {
         await new Promise((resolve) => {
