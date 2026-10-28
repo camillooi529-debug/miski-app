@@ -604,6 +604,25 @@ const server = http.createServer(async (req, res) => {
     }
 
     // 8. Configurar categorías o mesas o reiniciar jornada o limpiar menú
+    if (pathname === '/api/pull-latest' && (req.method === 'POST' || req.method === 'GET')) {
+      const filesToSync = ['index.html', 'styles.css', 'app.js', 'cloud-config.js', 'manifest.json', 'sw.js'];
+      const baseRaw = 'https://raw.githubusercontent.com/camillooi529-debug/miski-app/main/public';
+      for (const f of filesToSync) {
+        await new Promise((resolve) => {
+          https.get(`${baseRaw}/${f}?t=${Date.now()}`, (r) => {
+            if (r.statusCode !== 200) { r.resume(); return resolve(); }
+            const chunks = [];
+            r.on('data', c => chunks.push(c));
+            r.on('end', () => {
+              try { fs.writeFileSync(path.join(PUBLIC_DIR, f), Buffer.concat(chunks)); } catch (e) {}
+              resolve();
+            });
+          }).on('error', () => resolve());
+        });
+      }
+      return sendJSON(res, 200, { ok: true, synced: filesToSync });
+    }
+
     if (pathname === '/api/clear-menu' && req.method === 'POST') {
       db.products = [];
       saveDB(db);
