@@ -4,13 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Miski App — Pedidos y Cocina en Tiempo Real</title>
-  <link rel="manifest" href="/manifest.json?v=7" />
+  <link rel="manifest" href="/manifest.json?v=8" />
   <link rel="icon" type="image/png" href="/icon-192.png" />
   <link rel="apple-touch-icon" href="/icon-192.png" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0f172a" />
-  <link rel="stylesheet" href="/styles.css?v=7" />
+  <link rel="stylesheet" href="/styles.css?v=8" />
 </head>
 <body>
 
@@ -109,10 +109,16 @@
           👨‍🍳 Cocina <span id="kitchenBadge" class="badge-count" style="display:none">0</span>
         </button>
         <button id="tabBtnStock" class="role-tab" data-view="stock" onclick="switchView('stock')">
-          📦 Stock / Menú
+          📦 Stock
         </button>
         <button id="adminTabBtn" class="role-tab" data-view="admin" onclick="switchView('admin')" style="display:none; border:1px solid var(--warning);">
           👑 Admin
+        </button>
+        <button id="tabBtnSwitchRole" class="role-tab" type="button" onclick="quickToggleStaffRole()" style="color:#60a5fa; border:1px solid rgba(96,165,250,0.3); background:rgba(37,99,235,0.12);">
+          👨‍🍳 A Cocina
+        </button>
+        <button id="tabBtnLogout" class="role-tab" type="button" onclick="logoutSession()" style="color:#f87171; border:1px solid rgba(239,68,68,0.3); background:rgba(239,68,68,0.1);">
+          🚪 Salir
         </button>
       </nav>
 
@@ -126,8 +132,8 @@
         <button class="btn-icon" onclick="openConnectModal()" title="Compartir link o QR">
           📱 <span class="hide-mobile-text">QR</span>
         </button>
-        <button class="btn-icon" onclick="logoutSession()" title="Cambiar entre Mesero / Cocina / Admin" style="border-color:var(--danger); color:#f87171;">
-          🔄 <span class="hide-mobile-text">Perfil</span>
+        <button class="btn-icon" onclick="logoutSession()" title="Cerrar sesión o cambiar de puesto" style="border-color:var(--danger); color:#f87171;">
+          🚪 <span>Salir</span>
         </button>
       </div>
     </div>
@@ -233,6 +239,21 @@
 
       </div>
 
+      <!-- Barra inferior para cambiar de puesto o cerrar sesión -->
+      <div style="margin-top: 14px; padding: 12px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px;">
+        <span style="font-size: 0.82rem; color: var(--text-muted);">
+          Puesto activo: <b style="color: #fb923c;">📝 Mesero</b>
+        </span>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <button type="button" class="btn-icon" onclick="selectDeviceProfile('kitchen')" style="color: #60a5fa; border-color: #3b82f6;">
+            👨‍🍳 Cambiar a Cocina
+          </button>
+          <button type="button" class="btn-icon" onclick="logoutSession()" style="color: #f87171; border-color: var(--danger);">
+            🚪 Cerrar Sesión
+          </button>
+        </div>
+      </div>
+
       <!-- Barra flotante móvil con botón de Envío Directo -->
       <div id="mobileCartBar" class="mobile-cart-bar">
         <div onclick="scrollToCart()" style="cursor:pointer; flex:1; min-width:0;">
@@ -265,10 +286,18 @@
           </button>
         </div>
 
-        <div style="display:flex; gap:8px; align-items:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; width:100%;">
           <span style="font-size:0.82rem; color:var(--text-muted);">
             💡 Toca cada plato para tacharlo o pulsa <b>"Finalizar / Entregado"</b> al despachar
           </span>
+          <div style="display:flex; gap:8px;">
+            <button type="button" class="btn-icon" onclick="selectDeviceProfile('waiter')" style="color:#fb923c; border-color:#f97316;">
+              📝 Cambiar a Mesero
+            </button>
+            <button type="button" class="btn-icon" onclick="logoutSession()" style="color:#f87171; border-color:var(--danger);">
+              🚪 Cerrar Sesión
+            </button>
+          </div>
         </div>
       </div>
 
@@ -585,7 +614,7 @@
     </div>
   </div>
 
-  <script src="/cloud-config.js?v=7"></script>
-  <script src="/app.js?v=7"></script>
+  <script src="/cloud-config.js?v=8"></script>
+  <script src="/app.js?v=8"></script>
 </body>
 </html>

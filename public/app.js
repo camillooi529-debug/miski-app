@@ -222,12 +222,16 @@ function syncAuthUI() {
   const adminTab = document.getElementById('adminTabBtn');
   const roleBadge = document.getElementById('roleBadgeHeader');
   const menuEditorCol = document.getElementById('menuEditorColumn');
+  const btnSwitchRole = document.getElementById('tabBtnSwitchRole');
+  const btnLogout = document.getElementById('tabBtnLogout');
 
   if (!currentRole) {
     overlay.classList.add('open');
     if (stepPin) stepPin.style.display = 'block';
     if (stepProfile) stepProfile.style.display = 'none';
     if (roleBadge) roleBadge.textContent = '';
+    if (btnSwitchRole) btnSwitchRole.style.display = 'none';
+    if (btnLogout) btnLogout.style.display = 'none';
     return;
   }
 
@@ -236,15 +240,19 @@ function syncAuthUI() {
     overlay.classList.add('open');
     if (stepPin) stepPin.style.display = 'none';
     if (stepProfile) stepProfile.style.display = 'block';
+    if (btnSwitchRole) btnSwitchRole.style.display = 'none';
+    if (btnLogout) btnLogout.style.display = 'none';
     return;
   }
 
   overlay.classList.remove('open');
+  if (btnLogout) btnLogout.style.display = 'inline-flex';
 
   if (currentRole === 'admin') {
-    if (tabWaiter) tabWaiter.style.display = 'flex';
-    if (tabKitchen) tabKitchen.style.display = 'flex';
-    if (adminTab) adminTab.style.display = 'flex';
+    if (tabWaiter) tabWaiter.style.display = 'inline-flex';
+    if (tabKitchen) tabKitchen.style.display = 'inline-flex';
+    if (adminTab) adminTab.style.display = 'inline-flex';
+    if (btnSwitchRole) btnSwitchRole.style.display = 'none';
     if (roleBadge) {
       roleBadge.textContent = '👑 ADMIN';
       roleBadge.style.color = '#fbbf24';
@@ -257,8 +265,21 @@ function syncAuthUI() {
       menuEditorCol.style.display = canEdit ? 'flex' : 'none';
     }
 
+    if (btnSwitchRole) {
+      btnSwitchRole.style.display = 'inline-flex';
+      if (deviceProfile === 'waiter') {
+        btnSwitchRole.innerHTML = '👨‍🍳 A Cocina';
+        btnSwitchRole.style.color = '#60a5fa';
+        btnSwitchRole.style.borderColor = 'rgba(96,165,250,0.4)';
+      } else {
+        btnSwitchRole.innerHTML = '📝 A Mesero';
+        btnSwitchRole.style.color = '#fb923c';
+        btnSwitchRole.style.borderColor = 'rgba(249,115,22,0.4)';
+      }
+    }
+
     if (deviceProfile === 'waiter') {
-      if (tabWaiter) tabWaiter.style.display = 'flex';
+      if (tabWaiter) tabWaiter.style.display = 'inline-flex';
       if (tabKitchen) tabKitchen.style.display = 'none';
       if (roleBadge) {
         roleBadge.textContent = '📝 MESERO';
@@ -270,7 +291,7 @@ function syncAuthUI() {
       }
     } else if (deviceProfile === 'kitchen') {
       if (tabWaiter) tabWaiter.style.display = 'none';
-      if (tabKitchen) tabKitchen.style.display = 'flex';
+      if (tabKitchen) tabKitchen.style.display = 'inline-flex';
       if (roleBadge) {
         roleBadge.textContent = '👨‍🍳 COCINA';
         roleBadge.style.color = '#60a5fa';
@@ -365,6 +386,14 @@ function selectDeviceProfile(profile) {
   renderAll();
 }
 
+function quickToggleStaffRole() {
+  if (deviceProfile === 'waiter') {
+    selectDeviceProfile('kitchen');
+  } else {
+    selectDeviceProfile('waiter');
+  }
+}
+
 function logoutSession(customMsg) {
   currentRole = null;
   deviceProfile = null;
@@ -372,7 +401,21 @@ function logoutSession(customMsg) {
   localStorage.removeItem('miski_role');
   localStorage.removeItem('miski_device_profile');
   localStorage.removeItem('miski_admin_pin');
+  localStorage.removeItem('miski_view');
+
+  // Si había algún parámetro en la URL (?pin=... o ?role=...), removerlo
+  if (window.location.search) {
+    try {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } catch (e) {}
+  }
+
+  const pinInput = document.getElementById('pinLoginInput');
+  if (pinInput) pinInput.value = '';
+
   syncAuthUI();
+  showToast('🔒 Sesión cerrada');
+
   if (customMsg) {
     const errEl = document.getElementById('pinLoginError');
     if (errEl) {
@@ -380,6 +423,11 @@ function logoutSession(customMsg) {
       errEl.style.display = 'block';
     }
   }
+
+  setTimeout(() => {
+    const input = document.getElementById('pinLoginInput');
+    if (input) input.focus();
+  }, 100);
 }
 
 // =========================================================
@@ -1660,7 +1708,7 @@ window.addEventListener('resize', checkMobileDesktopModeAndScale);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js?v=7').catch(() => {});
+    navigator.serviceWorker.register('/sw.js?v=8').catch(() => {});
   });
 }
 
