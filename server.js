@@ -670,27 +670,54 @@ const server = http.createServer(async (req, res) => {
   }
   const filePath = path.join(PUBLIC_DIR, safePath);
 
+  const ext = path.extname(filePath).toLowerCase();
+  const isImage = ['.png', '.ico', '.jpg', '.jpeg', '.svg', '.webp'].includes(ext);
+
   if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-    const ext = path.extname(filePath).toLowerCase();
     const contentType = MIME_TYPES[ext] || 'application/octet-stream';
     res.writeHead(200, {
       'Content-Type': contentType,
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
     });
     fs.createReadStream(filePath).pipe(res);
+    return;
+  }
+
+  // Si es una imagen y no está en disco todavía (servidor en nube recién iniciado), descargar al vuelo de GitHub
+  if (isImage) {
+    const fileName = path.basename(filePath);
+    const rawUrl = `https://raw.githubusercontent.com/camillooi529-debug/miski-app/main/public/${fileName}`;
+    return https.get(rawUrl, (remoteRes) => {
+      if (remoteRes.statusCode === 200) {
+        const contentType = MIME_TYPES[ext] || 'image/png';
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Cache-Control': 'public, max-age=86400'
+        });
+        const fileStream = fs.createWriteStream(filePath);
+        remoteRes.pipe(fileStream);
+        remoteRes.pipe(res);
+      } else {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
+        res.end('Image not found');
+      }
+    }).on('error', () => {
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Image not found');
+    });
+  }
+
+  // Fallback SPA solo para páginas HTML
+  const indexPath = path.join(PUBLIC_DIR, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.writeHead(200, {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
+    });
+    fs.createReadStream(indexPath).pipe(res);
   } else {
-    // Fallback SPA a index.html
-    const indexPath = path.join(PUBLIC_DIR, 'index.html');
-    if (fs.existsSync(indexPath)) {
-      res.writeHead(200, {
-        'Content-Type': 'text/html; charset=utf-8',
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate'
-      });
-      fs.createReadStream(indexPath).pipe(res);
-    } else {
-      res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('404 - No encontrado');
-    }
+    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('404 - No encontrado');
   }
 });
 

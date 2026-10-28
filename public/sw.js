@@ -1,4 +1,4 @@
-const CACHE_NAME = 'miski-app-v10';
+const CACHE_NAME = 'miski-app-v12';
 
 self.addEventListener('install', () => {
   self.skipWaiting();

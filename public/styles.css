@@ -1,18 +1,27 @@
 :root {
-  --bg-dark: #0f172a;
-  --bg-card: #1e293b;
-  --bg-surface: #334155;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --primary: #f97316;
-  --primary-hover: #ea580c;
-  --success: #10b981;
+  /* Paleta Oficial Miski - Sabor a Tradición */
+  --bg-dark: #0d1712;
+  --bg-card: #15251d;
+  --bg-surface: #1e3529;
+  
+  --miski-green: #366848;
+  --miski-green-dark: #244831;
+  --miski-gold: #c89d54;
+  --miski-gold-hover: #b58941;
+  --miski-cream: #f6efe5;
+
+  --text-main: #fbf7f1;
+  --text-muted: #9ab5a4;
+  --primary: #c89d54;
+  --primary-hover: #b58941;
+  --success: #22c55e;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --info: #3b82f6;
-  --border: #334155;
+  --info: #38bdf8;
+  --border: #243c2e;
+  --border-gold: rgba(200, 157, 84, 0.45);
   --radius: 12px;
-  --shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -47,9 +56,9 @@ body {
   left: 0;
   right: 0;
   z-index: 150;
-  background: rgba(15, 23, 42, 0.98);
+  background: rgba(13, 23, 18, 0.98);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-gold);
   padding: 8px 10px;
   width: 100%;
 }
@@ -142,7 +151,8 @@ body {
 
 .role-tab.active {
   background: var(--primary);
-  color: #fff;
+  color: #0d1712;
+  font-weight: 900;
 }
 
 .badge-count {
@@ -155,8 +165,8 @@ body {
 }
 
 .role-tab.active .badge-count {
-  background: #fff;
-  color: var(--primary-hover);
+  background: #0d1712;
+  color: #fff;
 }
 
 .top-actions {
@@ -214,8 +224,8 @@ body {
     z-index: 120;
     border-radius: 0;
     border: none;
-    border-top: 1px solid var(--border);
-    background: #0f172a;
+    border-top: 1px solid var(--border-gold);
+    background: #0d1712;
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
     justify-content: space-around;
     gap: 3px;
@@ -241,8 +251,8 @@ body.force-mobile .role-tabs {
   z-index: 120;
   border-radius: 0;
   border: none;
-  border-top: 1px solid var(--border);
-  background: #0f172a;
+  border-top: 1px solid var(--border-gold);
+  background: #0d1712;
   padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
   justify-content: space-around;
 }
@@ -358,7 +368,8 @@ body.force-mobile .mobile-cart-bar.visible {
 .table-btn.selected {
   background: var(--primary);
   border-color: var(--primary);
-  color: #fff;
+  color: #0d1712;
+  font-weight: 900;
 }
 
 .table-btn.has-active {
@@ -405,9 +416,10 @@ body.force-mobile .mobile-cart-bar.visible {
 }
 
 .cat-pill.active {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--miski-green);
+  border-color: var(--miski-gold);
   color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
 
 /* ==========================================
@@ -444,8 +456,8 @@ body.force-mobile .mobile-cart-bar.visible {
 }
 
 .product-card.in-cart {
-  border-color: var(--primary);
-  background: rgba(249, 115, 22, 0.12);
+  border-color: var(--miski-gold);
+  background: rgba(200, 157, 84, 0.12);
 }
 
 .product-card.out-of-stock {
@@ -486,13 +498,13 @@ body.force-mobile .mobile-cart-bar.visible {
 }
 
 .stock-badge.free {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
 }
 
 .stock-badge.Plenty {
-  background: rgba(16, 185, 129, 0.18);
-  color: #34d399;
+  background: rgba(34, 197, 94, 0.18);
+  color: #4ade80;
 }
 
 .stock-badge.Low {
@@ -510,9 +522,9 @@ body.force-mobile .mobile-cart-bar.visible {
 }
 
 .btn-add-prod {
-  background: var(--primary);
+  background: var(--miski-green);
   color: #fff;
-  border: none;
+  border: 1px solid var(--border-gold);
   padding: 8px 12px;
   border-radius: 8px;
   font-weight: 800;
@@ -542,7 +554,7 @@ body.force-mobile .mobile-cart-bar.visible {
   border: none;
   border-radius: 6px;
   background: var(--primary);
-  color: #fff;
+  color: #0d1712;
   font-size: 1rem;
   font-weight: 900;
   cursor: pointer;
@@ -642,8 +654,8 @@ body.force-mobile .mobile-cart-bar.visible {
 
 .btn-send-kitchen {
   width: 100%;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff;
+  background: linear-gradient(135deg, #c89d54, #ad7f36);
+  color: #0d1712;
   border: none;
   padding: 13px;
   border-radius: 10px;
@@ -655,11 +667,13 @@ body.force-mobile .mobile-cart-bar.visible {
   align-items: center;
   justify-content: center;
   gap: 6px;
+  box-shadow: 0 4px 16px rgba(200, 157, 84, 0.4);
 }
 
 .btn-send-kitchen:disabled {
   background: var(--bg-surface);
   color: var(--text-muted);
+  box-shadow: none;
 }
 
 /* Barra Flotante Inferior en Móvil */
@@ -670,12 +684,12 @@ body.force-mobile .mobile-cart-bar.visible {
   left: 8px;
   right: 8px;
   z-index: 115;
-  background: #1e293b;
+  background: #15251d;
   border: 2px solid var(--primary);
   color: #fff;
   padding: 8px 10px;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
   justify-content: space-between;
   align-items: center;
   gap: 8px;
