@@ -1,27 +1,30 @@
 :root {
-  /* Paleta Oficial Miski - Sabor a Tradición */
-  --bg-dark: #0d1712;
-  --bg-card: #15251d;
-  --bg-surface: #1e3529;
+  /* Paleta Oficial Miski - Fondo Habano Sabor a Tradición */
+  --bg-dark: #f6efe5;          /* Fondo Habano oficial de la imagen */
+  --bg-card: #ffffff;          /* Tarjetas limpias blancas */
+  --bg-surface: #ede3d3;       /* Habano suave para inputs y paneles */
   
-  --miski-green: #366848;
-  --miski-green-dark: #244831;
-  --miski-gold: #c89d54;
-  --miski-gold-hover: #b58941;
-  --miski-cream: #f6efe5;
+  --miski-green: #284e36;      /* Verde Bosque de la mujer del logo */
+  --miski-green-dark: #1b3625;
+  --miski-green-light: #3d6f4f;
+  --miski-gold: #c4a761;       /* Dorado noble del marco ovalado y café */
+  --miski-gold-hover: #b59850;
+  --miski-cream: #f6efe5;      /* Color Habano */
 
-  --text-main: #fbf7f1;
-  --text-muted: #9ab5a4;
-  --primary: #c89d54;
-  --primary-hover: #b58941;
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --info: #38bdf8;
-  --border: #243c2e;
-  --border-gold: rgba(200, 157, 84, 0.45);
+  --text-main: #182c20;        /* Texto verde bosque profundo, muy legible */
+  --text-muted: #597363;       /* Verde musgo para subtítulos */
+  --primary: #284e36;          /* Verde principal */
+  --primary-hover: #1b3625;
+  
+  --success: #15803d;
+  --warning: #b45309;
+  --danger: #dc2626;
+  --info: #0284c7;
+  
+  --border: #dfd4c4;          /* Borde habano */
+  --border-gold: #c4a761;      /* Borde dorado */
   --radius: 12px;
-  --shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  --shadow: 0 4px 18px rgba(40, 78, 54, 0.08);
 }
 
 * {
@@ -56,11 +59,12 @@ body {
   left: 0;
   right: 0;
   z-index: 150;
-  background: rgba(13, 23, 18, 0.98);
+  background: rgba(246, 239, 229, 0.96);
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--border-gold);
+  border-bottom: 2px solid var(--border-gold);
   padding: 8px 10px;
   width: 100%;
+  box-shadow: 0 2px 10px rgba(40, 78, 54, 0.06);
 }
 
 .topbar-inner {
@@ -81,12 +85,12 @@ body {
 }
 
 .brand-logo {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   flex-shrink: 0;
   border-radius: 8px;
   background: #f6efe5;
-  border: 1px solid #d4af37;
+  border: 1.5px solid var(--miski-gold);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -101,6 +105,7 @@ body {
   display: flex;
   align-items: center;
   gap: 5px;
+  color: var(--miski-green);
 }
 
 .brand-sub {
@@ -127,7 +132,7 @@ body {
 .role-tabs {
   display: flex;
   gap: 4px;
-  background: var(--bg-card);
+  background: var(--bg-surface);
   padding: 4px;
   border-radius: 10px;
   border: 1px solid var(--border);
@@ -151,8 +156,9 @@ body {
 
 .role-tab.active {
   background: var(--primary);
-  color: #0d1712;
+  color: #f6efe5;
   font-weight: 900;
+  box-shadow: 0 3px 10px rgba(40, 78, 54, 0.25);
 }
 
 .badge-count {
@@ -165,8 +171,8 @@ body {
 }
 
 .role-tab.active .badge-count {
-  background: #0d1712;
-  color: #fff;
+  background: #fff;
+  color: var(--primary);
 }
 
 .top-actions {
@@ -177,7 +183,20 @@ body {
 }
 
 .btn-icon {
-  background: var(--bg-card);
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  padding: 6px 9px;
+  border-radius: 8px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
   border: 1px solid var(--border);
   color: var(--text-main);
   padding: 6px 9px;
@@ -224,11 +243,12 @@ body {
     z-index: 120;
     border-radius: 0;
     border: none;
-    border-top: 1px solid var(--border-gold);
-    background: #0d1712;
+    border-top: 2px solid var(--border-gold);
+    background: #f6efe5;
     padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
     justify-content: space-around;
     gap: 3px;
+    box-shadow: 0 -4px 15px rgba(40, 78, 54, 0.08);
   }
 
   .role-tab {
@@ -251,8 +271,9 @@ body.force-mobile .role-tabs {
   z-index: 120;
   border-radius: 0;
   border: none;
-  border-top: 1px solid var(--border-gold);
-  background: #0d1712;
+  border-top: 2px solid var(--border-gold);
+  background: #f6efe5;
+  box-shadow: 0 -4px 15px rgba(40, 78, 54, 0.08);
   padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
   justify-content: space-around;
 }
@@ -654,9 +675,9 @@ body.force-mobile .mobile-cart-bar.visible {
 
 .btn-send-kitchen {
   width: 100%;
-  background: linear-gradient(135deg, #c89d54, #ad7f36);
-  color: #0d1712;
-  border: none;
+  background: linear-gradient(135deg, #284e36, #1c3927);
+  color: #f6efe5;
+  border: 1.5px solid var(--miski-gold);
   padding: 13px;
   border-radius: 10px;
   font-size: 0.95rem;
@@ -667,11 +688,12 @@ body.force-mobile .mobile-cart-bar.visible {
   align-items: center;
   justify-content: center;
   gap: 6px;
-  box-shadow: 0 4px 16px rgba(200, 157, 84, 0.4);
+  box-shadow: 0 4px 16px rgba(40, 78, 54, 0.35);
 }
 
 .btn-send-kitchen:disabled {
   background: var(--bg-surface);
+  border-color: var(--border);
   color: var(--text-muted);
   box-shadow: none;
 }
@@ -684,12 +706,12 @@ body.force-mobile .mobile-cart-bar.visible {
   left: 8px;
   right: 8px;
   z-index: 115;
-  background: #15251d;
-  border: 2px solid var(--primary);
-  color: #fff;
+  background: #284e36;
+  border: 2px solid var(--miski-gold);
+  color: #f6efe5;
   padding: 8px 10px;
   border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.75);
+  box-shadow: 0 8px 24px rgba(40, 78, 54, 0.45);
   justify-content: space-between;
   align-items: center;
   gap: 8px;

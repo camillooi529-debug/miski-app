@@ -4,26 +4,26 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Miski App — Sabor a Tradición</title>
-  <link rel="manifest" href="/manifest.json?v=13" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=12" />
-  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=12" />
-  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png?v=12" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=12" />
+  <link rel="manifest" href="/manifest.json?v=20" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20" />
+  <link rel="icon" type="image/png" sizes="192x192" href="https://raw.githubusercontent.com/camillooi529-debug/miski-app/main/public/icon-192.png?v=20" />
+  <link rel="icon" type="image/png" sizes="512x512" href="https://raw.githubusercontent.com/camillooi529-debug/miski-app/main/public/icon-512.png?v=20" />
+  <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/camillooi529-debug/miski-app/main/public/apple-touch-icon.png?v=20" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="Miski App" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0d1712" />
-  <link rel="stylesheet" href="/styles.css?v=12" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="theme-color" content="#f6efe5" />
+  <link rel="stylesheet" href="/styles.css?v=20" />
 </head>
 <body>
 
   <!-- PANTALLA DE BLOQUEO PRIVADA Y SELECCIÓN DE PERFIL (MESERO VS COCINA) -->
-  <div id="authOverlay" class="modal-backdrop open" style="background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(14px); z-index: 999;">
-    <div class="modal-content" style="max-width: 390px; text-align: center; border: 1.5px solid var(--primary);">
-      <div style="width: 82px; height: 82px; border-radius: 20px; overflow: hidden; margin: 0 auto 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); border: 2px solid #d4af37; background: #f6efe5; display: flex; align-items: center; justify-content: center;">
-        <img src="/logo.png?v=9" onerror="this.onerror=null; this.src='https://raw.githubusercontent.com/camillooi529-debug/miski-app/main/public/logo.png';" alt="Miski Sabor a Tradición" style="width: 100%; height: 100%; object-fit: contain; padding: 2px;" />
+  <div id="authOverlay" class="modal-backdrop open" style="background: rgba(246, 239, 229, 0.98); backdrop-filter: blur(14px); z-index: 999;">
+    <div class="modal-content" style="max-width: 390px; text-align: center; border: 2px solid var(--border-gold); background: #ffffff; box-shadow: 0 10px 30px rgba(40, 78, 54, 0.15);">
+      <div style="width: 90px; height: 90px; border-radius: 22px; overflow: hidden; margin: 0 auto 10px; box-shadow: 0 4px 16px rgba(40, 78, 54, 0.12); border: 2px solid #c4a761; background: #f6efe5; display: flex; align-items: center; justify-content: center;">
+        <img src="https://raw.githubusercontent.com/camillooi529-debug/miski-app/main/public/logo.png" alt="Miski Sabor a Tradición" style="width: 100%; height: 100%; object-fit: contain; padding: 2px;" />
       </div>
-      <h2 style="font-size: 1.25rem; font-weight: 900; margin-bottom: 4px; letter-spacing: 0.5px;">MISKI APP</h2>
+      <h2 style="font-size: 1.25rem; font-weight: 900; margin-bottom: 4px; letter-spacing: 0.5px; color: var(--miski-green);">MISKI APP</h2>
 
       <!-- PASO 1: INGRESAR PIN -->
       <div id="authStepPin">
@@ -619,7 +619,7 @@
     </div>
   </div>
 
-  <script src="/cloud-config.js?v=12"></script>
-  <script src="/app.js?v=12"></script>
+  <script src="/cloud-config.js?v=20"></script>
+  <script src="/app.js?v=20"></script>
 </body>
 </html>
