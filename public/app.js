@@ -706,14 +706,24 @@ function renderProductCardHtml(p) {
     }
   }
 
+  let titleHtml = escapeHtml(p.name);
+  let variantBadgeHtml = '';
+  if (p.name.includes(' - ')) {
+    const parts = p.name.split(' - ');
+    titleHtml = escapeHtml(parts[0].trim());
+    const variant = parts.slice(1).join(' - ').trim();
+    variantBadgeHtml = `<div class="prod-variant-wrap"><span class="prod-variant-tag">${escapeHtml(variant)}</span></div>`;
+  }
+
   return `
     <div
       class="product-card ${inCartQty > 0 ? 'in-cart' : ''} ${isOut ? 'out-of-stock' : ''}"
       onclick="${canAddMore && inCartQty === 0 ? `addToCart('${p.id}')` : ''}"
     >
       <div class="prod-top-info">
-        <div class="prod-name" title="${escapeHtml(p.name)}">${escapeHtml(p.name)}</div>
-        ${stockBadgeHtml ? `<div style="margin-top:2px;">${stockBadgeHtml}</div>` : ''}
+        <div class="prod-name" title="${escapeHtml(p.name)}">${titleHtml}</div>
+        ${variantBadgeHtml}
+        ${stockBadgeHtml ? `<div style="margin-top:3px;">${stockBadgeHtml}</div>` : ''}
       </div>
 
       <div class="prod-bottom-row">
@@ -1297,19 +1307,39 @@ setInterval(() => {
 // =========================================================
 // 3. LÓGICA DE CONTROL DE STOCK Y MENÚ (INICIO Y MEDIA JORNADA)
 // =========================================================
+function clearStockSearchInput() {
+  const input = document.getElementById('searchStockInput');
+  const btn = document.getElementById('btnClearStockSearch');
+  if (input) input.value = '';
+  if (btn) btn.style.display = 'none';
+  renderStockManager();
+}
+
 function renderStockManager() {
   const container = document.getElementById('stockProductsList');
   if (!container) return;
 
-  if (appState.products.length === 0) {
-    container.innerHTML = `<div class="empty-state">No hay platos registrados. Agrega el primero en el formulario.</div>`;
+  const queryInput = document.getElementById('searchStockInput');
+  const clearBtn = document.getElementById('btnClearStockSearch');
+  const query = (queryInput?.value || '').toLowerCase().trim();
+  if (clearBtn) {
+    clearBtn.style.display = query ? 'flex' : 'none';
+  }
+
+  let products = appState.products;
+  if (query) {
+    products = products.filter(p => p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query));
+  }
+
+  if (products.length === 0) {
+    container.innerHTML = `<div class="empty-state">No se encontraron platos que coincidan con "${escapeHtml(query)}".</div>`;
     return;
   }
 
-  container.innerHTML = appState.products.map(p => {
+  container.innerHTML = products.map(p => {
     let statusBadge = '';
     if (!p.trackStock) {
-      statusBadge = `<span class="stock-badge free">♾️ Sin límite (Opcional)</span>`;
+      statusBadge = `<span class="stock-badge free">♾️ Sin límite (Venta libre)</span>`;
     } else if (p.stock <= 0) {
       statusBadge = `<span class="stock-badge Empty">⛔ AGOTADO (0)</span>`;
     } else if (p.stock <= 5) {
@@ -1318,31 +1348,46 @@ function renderStockManager() {
       statusBadge = `<span class="stock-badge Plenty">✅ Quedan: ${p.stock}</span>`;
     }
 
+    const price = getProductPrice(p);
+    const priceFormatted = price ? `$${Number(price).toLocaleString('es-CO')}` : '';
+
     return `
       <div class="stock-row">
         <div class="stock-row-info">
-          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-            <span class="stock-row-title">${escapeHtml(p.name)}</span>
-            ${statusBadge}
+          <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+            <div>
+              <span class="stock-row-title">${escapeHtml(p.name)}</span>
+              <div class="prod-cat-tag">${escapeHtml(p.category)} ${priceFormatted ? `· <b style="color:var(--miski-gold);">${priceFormatted}</b>` : ''}</div>
+            </div>
+            <div>${statusBadge}</div>
           </div>
-          <div class="prod-cat-tag">${escapeHtml(p.category)}</div>
         </div>
 
         <div class="stock-controls-group">
-          <button
-            type="button"
-            class="toggle-mode-btn ${p.trackStock ? 'tracked' : ''}"
-            onclick="toggleProductStockMode('${p.id}', ${!p.trackStock})"
-            title="Activar o desactivar límite de cantidad para hoy"
-          >
-            ${p.trackStock ? '🔢 Con Cantidad' : '♾️ Libre (Activar Cantidad)'}
-          </button>
+          <div class="stock-mode-toggles">
+            <button
+              type="button"
+              class="toggle-mode-btn ${!p.trackStock ? 'active-free' : ''}"
+              onclick="toggleProductStockMode('${p.id}', false)"
+              title="Permitir venta libre sin límite para este plato"
+            >
+              ♾️ Sin Límite
+            </button>
+            <button
+              type="button"
+              class="toggle-mode-btn ${p.trackStock ? 'active-tracked' : ''}"
+              onclick="${p.trackStock ? '' : `activateProductStockPrompt('${p.id}', '${escapeHtml(p.name)}')`}"
+              title="Fijar cuántas porciones o unidades hay hoy"
+            >
+              🔢 Con Cantidad
+            </button>
+          </div>
 
           ${
             p.trackStock
               ? `
                 <div class="quick-stock-btns">
-                  <button type="button" class="btn-stock-adj minus" onclick="adjustProductStock('${p.id}', -1)">-1</button>
+                  <button type="button" class="btn-stock-adj minus" onclick="adjustProductStock('${p.id}', -1)" title="Restar 1">−1</button>
                   <input
                     type="number"
                     class="stock-Direct-input"
@@ -1351,33 +1396,41 @@ function renderStockManager() {
                     onchange="setExactProductStock('${p.id}', this.value)"
                     title="Escribe la cantidad exacta disponible"
                   />
-                  <button type="button" class="btn-stock-adj plus" onclick="adjustProductStock('${p.id}', 1)">+1</button>
-                  <button type="button" class="btn-stock-adj plus" onclick="adjustProductStock('${p.id}', 5)">+5</button>
-                  <button type="button" class="btn-stock-adj plus" onclick="adjustProductStock('${p.id}', 10)">+10</button>
+                  <button type="button" class="btn-stock-adj plus" onclick="adjustProductStock('${p.id}', 1)" title="Sumar 1">+1</button>
+                  <button type="button" class="btn-stock-adj plus" onclick="adjustProductStock('${p.id}', 5)" title="Sumar 5">+5</button>
+                  <button
+                    type="button"
+                    class="btn-set-stock-modal"
+                    onclick="promptSetStock('${p.id}', ${p.stock}, '${escapeHtml(p.name)}')"
+                    title="Ingresar número exacto con teclado"
+                  >
+                    ✏️ Fijar
+                  </button>
                 </div>
               `
               : ''
           }
 
-          <button
-            type="button"
-            class="btn-icon"
-            style="border-color:var(--border);"
-            onclick="editProductPrompt('${p.id}')"
-            title="Editar nombre o categoría"
-          >
-            ✏️
-          </button>
-
-          <button
-            type="button"
-            class="btn-icon"
-            style="color:var(--danger); border-color:transparent; background:rgba(239,68,68,0.1);"
-            onclick="deleteProductPrompt('${p.id}', '${escapeHtml(p.name)}')"
-            title="Eliminar plato del menú"
-          >
-            🗑️
-          </button>
+          <div style="display:flex; gap:6px; margin-left:auto;">
+            <button
+              type="button"
+              class="btn-icon"
+              style="border-color:var(--border);"
+              onclick="editProductPrompt('${p.id}')"
+              title="Editar nombre o categoría"
+            >
+              ✏️
+            </button>
+            <button
+              type="button"
+              class="btn-icon"
+              style="color:var(--danger); border-color:transparent; background:rgba(239,68,68,0.1);"
+              onclick="deleteProductPrompt('${p.id}', '${escapeHtml(p.name)}')"
+              title="Eliminar plato del menú"
+            >
+              🗑️
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -1466,24 +1519,45 @@ async function clearAllMenuPrompt() {
   }
 }
 
+async function activateProductStockPrompt(prodId, prodName) {
+  const product = appState.products.find(p => p.id === prodId);
+  const current = product && product.stock > 0 ? product.stock : 10;
+  const val = prompt(`Ingresa la cantidad disponible hoy para:\n"${prodName}":`, current);
+  if (val === null) return;
+  const num = Math.max(0, parseInt(val.trim(), 10) || 0);
+  await setExactProductStock(prodId, num);
+}
+
+async function promptSetStock(prodId, currentStock, prodName) {
+  const val = prompt(`Ingresa la cantidad exacta disponible hoy para:\n"${prodName}":`, currentStock);
+  if (val === null) return;
+  const num = parseInt(val.trim(), 10);
+  if (isNaN(num) || num < 0) {
+    showToast('⚠️ Ingresa un número válido mayor o igual a 0');
+    return;
+  }
+  await setExactProductStock(prodId, num);
+}
+
 async function toggleProductStockMode(prodId, enableTrack) {
   const product = appState.products.find(p => p.id === prodId);
-  const initialStock = enableTrack && product && product.stock === 0 ? 20 : (product ? product.stock : 0);
+  if (!product) return;
+
+  if (enableTrack) {
+    await activateProductStockPrompt(prodId, product.name);
+    return;
+  }
 
   try {
     const res = await fetch(`/api/products/${prodId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ trackStock: enableTrack, stock: initialStock })
+      body: JSON.stringify({ trackStock: false })
     });
     const data = await res.json();
     if (data.ok && data.state) {
       handleIncomingState(data.state, 'STOCK_MODE');
-      showToast(
-        enableTrack
-          ? `🔢 Control de cantidad activado para "${data.product.name}"`
-          : `♾️ "${data.product.name}" ahora tiene venta libre sin límite`
-      );
+      showToast(`♾️ "${data.product.name}" ahora tiene venta libre sin límite`);
     }
   } catch (e) {
     showToast('❌ Error actualizando modo de stock');

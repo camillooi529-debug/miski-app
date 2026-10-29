@@ -13,7 +13,7 @@
   <meta name="apple-mobile-web-app-title" content="Miski App" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="theme-color" content="#f6efe5" />
-  <link rel="stylesheet" href="/styles.css?v=26" />
+  <link rel="stylesheet" href="/styles.css?v=27" />
 </head>
 <body>
 
@@ -336,6 +336,16 @@
               </div>
             </div>
 
+            <div class="search-box-wrapper" style="margin-bottom: 12px;">
+              <input
+                type="text"
+                id="searchStockInput"
+                class="input-field search-input-with-clear"
+                placeholder="🔍 Buscar plato en stock (ej. Pizza, Champiñones, Café)..."
+                oninput="renderStockManager()"
+              />
+              <button id="btnClearStockSearch" type="button" class="btn-clear-search" onclick="clearStockSearchInput()" style="display:none;" title="Borrar búsqueda">✕</button>
+            </div>
             <div id="stockProductsList" class="stock-list"></div>
           </div>
         </div>
@@ -620,7 +630,7 @@
     </div>
   </div>
 
-  <script src="/cloud-config.js?v=26"></script>
-  <script src="/app.js?v=26"></script>
+  <script src="/cloud-config.js?v=27"></script>
+  <script src="/app.js?v=27"></script>
 </body>
 </html>
